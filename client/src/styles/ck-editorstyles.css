@@ -1,0 +1,84 @@
+/* Add these styles in your CSS file or directly in your React component */
+.ckeditor-content h1,
+.ckeditor-content h2,
+.ckeditor-content h3,
+.ckeditor-content h4,
+.ckeditor-content h5,
+.ckeditor-content h6 {
+  font-weight: bold;
+  margin: 1em 0;
+}
+
+.ckeditor-content p {
+  margin: 0.5em 0;
+}
+
+.ckeditor-content ul,
+.ckeditor-content ol {
+  padding-left: 20px;
+}
+
+.ckeditor-content blockquote {
+  border-left: 4px solid #ddd;
+  padding-left: 10px;
+  margin-left: 0;
+  font-style: italic;
+}
+
+.ckeditor-content a {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+
+/* Make sure headings in the preview section reflect the correct font sizes */
+.ckeditor-content h1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.ckeditor-content h2 {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.ckeditor-content h3 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.ckeditor-content h4 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.ckeditor-content h5 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.ckeditor-content h6 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.ckeditor-content p {
+  margin: 0.5em 0;
+}
+
+.ckeditor-content ul,
+.ckeditor-content ol {
+  padding-left: 20px;
+}
+
+.ckeditor-content blockquote {
+  border-left: 4px solid #ddd;
+  padding-left: 10px;
+  margin-left: 0;
+  font-style: italic;
+}
+
+.ckeditor-content a {
+  color: #007bff;
+  text-decoration: underline;
+}
