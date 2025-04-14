@@ -6,8 +6,25 @@ const BlogPaper = require("../models/BlogSchema")
 const moduleSchema = require("../models/ModuleSchema");
 const { routes } = require('../../server');
 // GET /api/admin/research-papers
+const Chapter = require("../models/Chapters")
 // Returns all research papers in JSON
 
+
+// GET route to fetch user by ID
+router.get('/chapter/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await Chapter.findById(id); // Search in schema by ID
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user); // Return found document
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching user', error: err.message });
+  }
+});
 
 router.get("/all-modules",async (req,res)=>{
   try {

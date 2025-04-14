@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Box, Typography, Button, Breadcrumbs, Paper, CircularProgress,
-  Divider, IconButton, Drawer, List, ListItem, ListItemText, Tabs, Tab,
+  Divider, IconButton, Drawer, List, ListItem, ListItemText,
   Snackbar, Alert, Chip
 } from '@mui/material';
 import { 
@@ -15,12 +15,23 @@ import { getModuleById } from '../data/modules';
 import { riscvProcessor } from '../data/modules/riscvProcessor';
 import ChapterContent from '../components/ChapterContent';
 import { getChapterProgress, updateChapterProgress } from '../utils/progressTracker';
+import URLSITE from '../constant';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/googlecode.css';
+
+// Import Verilog highlighting - make sure you have this installed
+import 'highlight.js/lib/languages/verilog';
+
+// Register Verilog language with highlight.js
+hljs.registerLanguage('verilog', require('highlight.js/lib/languages/verilog'));
+
 
 const ChapterView = () => {
   const { moduleId, chapterId } = useParams();
   const navigate = useNavigate();
   const [module, setModule] = useState(null);
   const [chapter, setChapter] = useState(null);
+  const [chapterContent, setChapterContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isChapterBookmarked, setIsChapterBookmarked] = useState(false);
@@ -32,6 +43,12 @@ const ChapterView = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [progress, setProgress] = useState(null);
 
+
+  useEffect(() => {
+    document.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightBlock(block);
+    });
+  });
   // Fetch module and chapter data
   useEffect(() => {
     const fetchModuleAndChapter = async () => {
@@ -50,20 +67,37 @@ const ChapterView = () => {
         
         setModule(moduleData);
         
-        // Get chapter data
-        let chapterData;
-        
-        // Find the chapter in the module data
-        if (moduleId === 'riscv-processor') {
-          // For RISC-V, use the full chapter data that's already in the moduleData
-          chapterData = moduleData.chapters.find(c => c.id === parseInt(chapterId));
-        } else {
-          // For other modules, find the chapter in moduleData.chapters
-          const chapterNum = parseInt(chapterId, 10);
-          chapterData = moduleData?.chapters?.find(ch => ch.id === chapterNum) || null;
+        // Fetch chapter content from server using chapterId
+        try {
+          const response = await fetch(`${URLSITE}/api/general/chapter/${chapterId}`);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch chapter content: ${response.status}`);
+          }
+          const data = await response.json();
+          setChapterContent(data);
+          
+          // Set chapter basic info
+          setChapter({
+            id: data.id,
+            title: data.title,
+            moduleId: data.moduleId
+          });
+        } catch (err) {
+          console.error('Error fetching chapter content:', err);
+          setError(err.message);
+          
+          // Fallback to old behavior if API fetch fails
+          if (moduleId === 'riscv-processor') {
+            // For RISC-V, use the full chapter data that's already in the moduleData
+            const fallbackChapter = moduleData.chapters.find(c => c.id === parseInt(chapterId));
+            setChapter(fallbackChapter);
+          } else {
+            // For other modules, find the chapter in moduleData.chapters
+            const chapterNum = parseInt(chapterId, 10);
+            const fallbackChapter = moduleData?.chapters?.find(ch => ch.id === chapterNum) || null;
+            setChapter(fallbackChapter);
+          }
         }
-        
-        setChapter(chapterData);
         
         // Get progress data
         if (isAuthenticated) {
@@ -75,7 +109,7 @@ const ChapterView = () => {
         }
         
         // Check if this chapter is bookmarked
-        if (chapterData) {
+        if (chapterId) {
           const bookmarkedChapters = JSON.parse(localStorage.getItem('bookmarkedChapters') || '[]');
           const isBookmarked = bookmarkedChapters.some(
             bookmark => bookmark.moduleId === moduleId && bookmark.chapterId === chapterId
@@ -106,7 +140,7 @@ const ChapterView = () => {
   const navigateToPrevChapter = () => {
     if (!module || !chapter) return;
     
-    const currentIndex = module.chapters.findIndex(ch => ch.id === chapter.id);
+    const currentIndex = module.chapters.findIndex(ch => ch.id === parseInt(chapterId));
     if (currentIndex > 0) {
       const prevChapter = module.chapters[currentIndex - 1];
       navigate(`/modules/${moduleId}/chapters/${prevChapter.id}`);
@@ -117,7 +151,7 @@ const ChapterView = () => {
   const navigateToNextChapter = () => {
     if (!module || !chapter) return;
     
-    const currentIndex = module.chapters.findIndex(ch => ch.id === chapter.id);
+    const currentIndex = module.chapters.findIndex(ch => ch.id === parseInt(chapterId));
     if (currentIndex < module.chapters.length - 1) {
       const nextChapter = module.chapters[currentIndex + 1];
       navigate(`/modules/${moduleId}/chapters/${nextChapter.id}`);
@@ -132,7 +166,7 @@ const ChapterView = () => {
   const markChapterCompleted = () => {
     if (!module || !chapter) return;
     
-    updateChapterProgress(moduleId, chapter.id, true);
+    updateChapterProgress(moduleId, parseInt(chapterId), true);
     setIsChapterCompleted(true);
     showSnackbar('Chapter marked as completed!', 'success');
   };
@@ -144,7 +178,7 @@ const ChapterView = () => {
     const bookmarkedChapters = JSON.parse(localStorage.getItem('bookmarkedChapters') || '[]');
     const bookmarkData = {
       moduleId,
-      chapterId: chapter.id.toString(),
+      chapterId: chapterId.toString(),
       moduleTitle: module.title,
       chapterTitle: chapter.title,
       timestamp: new Date().toISOString()
@@ -153,7 +187,7 @@ const ChapterView = () => {
     if (isChapterBookmarked) {
       // Remove bookmark
       const updatedBookmarks = bookmarkedChapters.filter(
-        bookmark => !(bookmark.moduleId === moduleId && bookmark.chapterId === chapter.id.toString())
+        bookmark => !(bookmark.moduleId === moduleId && bookmark.chapterId === chapterId.toString())
       );
       localStorage.setItem('bookmarkedChapters', JSON.stringify(updatedBookmarks));
       setIsChapterBookmarked(false);
@@ -206,7 +240,7 @@ const ChapterView = () => {
   }
 
   // Calculate chapter navigation info
-  const currentIndex = module.chapters.findIndex(ch => ch.id === chapter.id);
+  const currentIndex = module.chapters.findIndex(ch => ch.id === parseInt(chapterId));
   const isFirstChapter = currentIndex === 0;
   const isLastChapter = currentIndex === module.chapters.length - 1;
   const prevChapter = !isFirstChapter ? module.chapters[currentIndex - 1] : null;
@@ -225,7 +259,7 @@ const ChapterView = () => {
           <Divider sx={{ mb: 2 }} />
           <List>
             {module.chapters.map(ch => {
-              const isCurrentChapter = ch.id === chapter.id;
+              const isCurrentChapter = ch.id === parseInt(chapterId);
               const isCompleted = getChapterProgress(moduleId, ch.id);
               
               return (
@@ -284,7 +318,7 @@ const ChapterView = () => {
               <Link to={`/modules/${moduleId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 {module.title}
               </Link>
-              <Typography color="text.primary">Chapter {chapter.id}</Typography>
+              <Typography color="text.primary">Chapter {chapterContent.title}</Typography>
             </Breadcrumbs>
           </Box>
           <Button 
@@ -301,7 +335,7 @@ const ChapterView = () => {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <MenuBook sx={{ mr: 1, color: 'primary.main' }} />
             <Typography variant="subtitle1">
-              Chapter {chapter.id} of {module.chapters.length}
+              Chapter {chapterContent.title} of {module.chapters.length}
               {isChapterCompleted && (
                 <Chip 
                   size="small" 
@@ -337,12 +371,70 @@ const ChapterView = () => {
 
         {/* Main content */}
         <Paper elevation={0} sx={{ borderRadius: 2, overflow: 'hidden', mb: 4 }}>
-          <ChapterContent 
-            chapter={chapter} 
-            moduleId={moduleId} 
-            onQuizCompletion={handleQuizCompletion}
-            onNextChapter={navigateToNextChapter}
-          />
+          {/* Chapter title */}
+          <Box sx={{ p: 4, pb: 2 }}>
+            <Typography variant="h4" gutterBottom>
+              {chapterContent?.title || chapter.title}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              {chapterContent?.description || ""}
+            </Typography>
+            {chapterContent?.estimatedTime && (
+              <Typography variant="body2" color="text.secondary">
+                Estimated time: {chapterContent.estimatedTime}
+              </Typography>
+            )}
+          </Box>
+          
+          {/* Display each section content */}
+          {chapterContent?.sections?.map((section) => (
+            <Box key={section.id} sx={{ p: 4 }}>
+              <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
+                {section.title}
+              </Typography>
+              <div
+                className="prose prose-sm max-w-none bg-white p-4 border border-gray-200 rounded text-[1.2rem]"
+                dangerouslySetInnerHTML={{ __html: section.content }}
+              />
+            </Box>
+          ))}
+          
+          {/* Code examples section */}
+          {chapterContent?.codeExamples?.length > 0 && (
+            <Box sx={{ p: 4 }}>
+              <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
+                Code Examples
+              </Typography>
+              {chapterContent.codeExamples.map((example) => (
+                <Box key={example.id} sx={{ mb: 4 }}>
+                  <Typography variant="h6" gutterBottom>
+                    {example.title}
+                  </Typography>
+                  <Typography variant="body2" gutterBottom>
+                    {example.description}
+                  </Typography>
+                  <pre className="bg-gray-100 p-4 rounded overflow-auto">
+                    <code>{example.code}</code>
+                  </pre>
+                  {example.explanation && (
+                    <Typography variant="body2" sx={{ mt: 2 }}>
+                      {example.explanation}
+                    </Typography>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          )}
+          
+          {/* If no content is available, use the ChapterContent component as fallback */}
+          {(!chapterContent || (!chapterContent.sections && !chapterContent.codeExamples)) && (
+            <ChapterContent 
+              chapter={chapter} 
+              moduleId={moduleId} 
+              onQuizCompletion={handleQuizCompletion}
+              onNextChapter={navigateToNextChapter}
+            />
+          )}
         </Paper>
         
         {/* Chapter navigation */}
@@ -355,7 +447,7 @@ const ChapterView = () => {
             mx: { xs: 2, md: 8 }
           }}
         >
-          <Button 
+          {/* <Button 
             variant="outlined"
             disabled={isFirstChapter}
             onClick={navigateToPrevChapter}
@@ -373,7 +465,7 @@ const ChapterView = () => {
             sx={{ visibility: isLastChapter ? 'hidden' : 'visible' }}
           >
             {nextChapter ? nextChapter.title : 'Next'}
-          </Button>
+          </Button> */}
         </Box>
       </Box>
 
@@ -396,4 +488,4 @@ const ChapterView = () => {
   );
 };
 
-export default ChapterView; 
+export default ChapterView;

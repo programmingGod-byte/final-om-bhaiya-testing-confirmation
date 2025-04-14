@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box, CssBaseline } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -34,8 +34,9 @@ import ModuleChapterEditor from './pages/Ckeditor2';
 import BlogWriter from './pages/BlogWriter';
 import UserProfile from './pages/ProfilePage';
 import PricingPage from './pages/PricingPage';
+import AuthContext from './context/AuthContext';
 // Switch manually for now
-const currentTheme = lightTheme;
+const currentTheme = darkTheme;
 
 
 
@@ -60,6 +61,7 @@ const theme = createTheme({
 });
 
 function App() {
+  const context = useContext(AuthContext)
   useEffect(() => {
     // Set document title
     document.title = 'VeriGeek - Empower Your Logic, Code Your Circuit!';
@@ -169,7 +171,7 @@ function App() {
   ];
 
   return (
-    <ThemeProvider theme={currentTheme}>
+    <ThemeProvider theme={context.colorMode == "light" ? lightTheme :darkTheme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />

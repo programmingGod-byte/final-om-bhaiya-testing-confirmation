@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [colorMode,setColorMode] = useState("light")
   const navigate = useNavigate()
   useEffect(() => {
     // Check if user is stored in localStorage
@@ -52,7 +53,8 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated, 
       loading, 
       error,
-      
+      colorMode,
+      setColorMode
     }}>
       {children}
     </AuthContext.Provider>

@@ -1,5 +1,7 @@
 import React, { useContext, useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import {
   AppBar, Toolbar, Typography, Button, IconButton, Box, Menu, MenuItem,
   Container, Avatar, Tooltip, Drawer, List, ListItem, ListItemIcon,
@@ -12,6 +14,7 @@ import {
 } from '@mui/icons-material';
 import AuthContext from '../context/AuthContext';
 import FileUploader from "./FileUpload"
+import { dark } from '@mui/material/styles/createPalette';
 const Header = () => {
   const context = useContext(AuthContext);
   const theme = useTheme();
@@ -348,7 +351,11 @@ const Header = () => {
                     <Typography textAlign="center">Logout</Typography>
                   </MenuItem>
                 </Menu>
+
+
                 {adminUser&&<FileUploader/>}
+
+
                 {/* Notifications Menu */}
                 <Menu
                   sx={{ mt: '45px', width: 320 }}
@@ -423,8 +430,28 @@ const Header = () => {
                 >
                   Register
                 </Button>
+
+      
               </Box>
             )}
+          <button
+      onClick={()=>context.colorMode=="dark" ? context.setColorMode("light"):context.setColorMode("dark")}
+              style={{
+                marginLeft:"10px"
+              }}
+    >
+      
+      {
+        context.colorMode=="dark"?
+        <DarkModeIcon className='text-white text-sm' />
+        :<LightModeIcon className='text-yellow-500 text-sm' />
+      }
+      
+      
+      
+    </button>
+
+            
           </Box>
         </Toolbar>
       </Container>

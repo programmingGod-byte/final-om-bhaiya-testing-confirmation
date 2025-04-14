@@ -48,7 +48,7 @@ const ModuleDetail = () => {
     const fetchDocument = async () => {
       try {
         console.log(id)
-        const { data } = await axios.get(`http://localhost:5000/api/general/get-module/67fce343a7529de10f5ff4d9`);
+        const { data } = await axios.get(`${URLSITE}/api/general/get-module/${id}`);
         // setDocument(data);
         setModule(data)
         // setLoading(false);
@@ -95,7 +95,7 @@ const ModuleDetail = () => {
         <Button component={Link} to="/modules" sx={{ mt: 2 }}>
           Back to Modules
         </Button>
-      </Box>
+    </Box>
     );
   }
 

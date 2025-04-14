@@ -352,7 +352,7 @@ const Modules = () => {
           {displayedModules.map(module => (
             <Grid item xs={12} sm={6} md={4} key={module.id}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.3s, box-shadow 0.3s', '&:hover': { transform: 'translateY(-8px)', boxShadow: 6 } }}>
-                <CardActionArea component={Link} to={`/modules/${module.id}`}>
+                <CardActionArea component={Link} to={`/modules/${module._id}`}>
                   <CardMedia
                     component="img"
                     height="160"
