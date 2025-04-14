@@ -362,7 +362,7 @@ endmodule`;
           </Typography>
           <Button 
             component={Link} 
-            to="/editor" 
+            to="/workspace" 
             variant="contained" 
             color="primary"
             endIcon={<Code />}
@@ -407,13 +407,13 @@ endmodule`;
         <Box>
           <Button 
             component={Link} 
-            to="/register" 
+            to="/login" 
             variant="contained" 
             color="primary"
             size="large"
             sx={{ mr: 2 }}
           >
-            Sign Up Free
+            Join us
           </Button>
           <Button 
             component={Link} 

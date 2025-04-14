@@ -300,20 +300,6 @@ const Header = () => {
             {isLoggedIn ? (
               <>
                 {/* Notifications */}
-                <Tooltip title="Notifications">
-                  <IconButton 
-                    color="inherit" 
-                    onClick={handleNotificationsOpen}
-                    sx={{ mr: 1 }}
-                  >
-                    <Badge 
-                      badgeContent={notifications.filter(n => n.unread).length} 
-                      color="error"
-                    >
-                      <Notifications />
-                    </Badge>
-                  </IconButton>
-                </Tooltip>
                 
                 {/* User Menu */}
                 <Tooltip title="Open profile menu">

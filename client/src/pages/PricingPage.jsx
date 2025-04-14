@@ -22,7 +22,7 @@ function PricingPage() {
               </div>
               <div className="px-6 py-8 bg-gray-50">
                 <ul className="space-y-4">
-                  {[ "Research Paper", "Blog","Forum"].map((feature) => (
+                  {["Blog","Forum"].map((feature) => (
                     <li key={feature} className="flex items-start">
                       <div className="flex-shrink-0">
                         <svg
@@ -43,7 +43,7 @@ function PricingPage() {
 
 
 
-{["5 workspace", "Limited module"].map((feature) => (
+{["Research Paper","5 workspace", "Limited module"].map((feature) => (
                     <li key={feature} className="flex items-start">
                       <div className="flex-shrink-0">
 
@@ -104,14 +104,14 @@ function PricingPage() {
                 <h3 className="text-2xl font-medium text-gray-900">Pro</h3>
                 <div className="mt-4 flex items-baseline text-6xl font-extrabold">
                 ₹99
-                  <span className="ml-1 text-2xl font-medium text-gray-500">/month</span>
+                  <span className="ml-1 text-2xl font-medium text-gray-500">/module</span>
                 </div>
                 <p className="mt-5 text-lg text-gray-500">Perfect for learning Hardware Fundamentals</p>
               </div>
               <div className="px-6 py-8 bg-gray-50">
                 <ul className="space-y-4">
                
-                {[ "Research Paper", "Blog","Forum"].map((feature) => (
+                {[ "Blog","Forum"].map((feature) => (
                     <li key={feature} className="flex items-start">
                       <div className="flex-shrink-0">
                         <svg
@@ -132,7 +132,7 @@ function PricingPage() {
 
 
 
-{["Unlimited workspace", "Access to all module"].map((feature) => (
+{["Research Paper","Unlimited workspace", "Access to all module"].map((feature) => (
                     <li key={feature} className="flex items-start">
                       <div className="flex-shrink-0">
                       <svg

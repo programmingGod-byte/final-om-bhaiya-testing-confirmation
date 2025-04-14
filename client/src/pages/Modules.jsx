@@ -1,22 +1,103 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, 
   Chip, TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem,
-  Pagination, Divider
+  Pagination, Divider, CircularProgress
 } from '@mui/material';
 import { Search, FilterList } from '@mui/icons-material';
-import moduleData from '../data/modules';
+import URLSITE from '../constant';
+
+import {
+  Add as AddIcon,
+  ThumbUp as ThumbUpIcon,
+  Comment as CommentIcon,
+  Share as ShareIcon,
+  Bookmark as BookmarkIcon,
+  BookmarkBorder as BookmarkBorderIcon,
+  Code as CodeIcon,
+  Tag as TagIcon,
+  Login as LoginIcon,
+  Logout as LogoutIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
+  Send as SendIcon,
+  QuestionAnswer as QuestionAnswerIcon,
+  Search as SearchIcon,
+  FilterAlt as FilterAltIcon,
+  ElectricBolt as ElectricBoltIcon,
+  Memory as MemoryIcon,
+  Code,
+} from '@mui/icons-material';
+import {
+  
+  Paper,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Stack,
+  Rating,
+  CardActions,
+  Alert,
+  Tabs,
+  Tab,
+  TextareaAutosize,
+  Snackbar,
+  Collapse,
+  Badge,
+  Container,
+  Fade,
+  Zoom,
+} from '@mui/material';
 
 const Modules = () => {
-  // State for filters and pagination
+  // State for data, filters, and pagination
+  const [modules, setModules] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [levelFilter, setLevelFilter] = useState('all');
   const [page, setPage] = useState(1);
+  const [categories, setCategories] = useState([]);
+  const [levels, setLevels] = useState([]);
   
-  // Use imported modules data
-  const modules = moduleData;
+  // Fetch modules data from API
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${URLSITE}/api/general/all-modules`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log(data)
+        setModules(data);
+        
+        // Extract unique categories and levels for filters
+        setCategories([...new Set(data.map(module => module.category))]);
+        setLevels([...new Set(data.map(module => module.level))]);
+        
+        setError(null);
+      } catch (err) {
+        setError(`Failed to fetch modules: ${err.message}`);
+        console.error('Error fetching modules:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchModules();
+  }, []);
 
   // Filter modules based on search and filters
   const filteredModules = modules.filter(module => {
@@ -26,15 +107,11 @@ const Modules = () => {
                            chapter.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            chapter.description.toLowerCase().includes(searchQuery.toLowerCase())
                          ));
-    const matchesCategory = categoryFilter === 'all' || module.level === categoryFilter;
+    const matchesCategory = categoryFilter === 'all' || module.category === categoryFilter;
     const matchesLevel = levelFilter === 'all' || module.level === levelFilter;
     
     return matchesSearch && matchesCategory && matchesLevel;
   });
-
-  // Get unique categories and levels for filter options
-  const categories = [...new Set(modules.map(module => module.level))];
-  const levels = [...new Set(modules.map(module => module.level))];
 
   // Pagination logic
   const modulesPerPage = 6;
@@ -44,15 +121,159 @@ const Modules = () => {
     page * modulesPerPage
   );
 
-  return (
-    <Box className="container page-container">
-      <Typography variant="h3" component="h1" gutterBottom color="primary">
-        VeriGeek Learning Modules
-      </Typography>
-      <Typography variant="subtitle1" paragraph sx={{ mb: 4 }}>
-        Browse our comprehensive collection of Verilog modules designed to take you from beginner to expert. Each module contains theory, examples, and hands-on exercises.
-      </Typography>
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+        <Typography variant="h6" sx={{ ml: 2 }}>Loading modules...</Typography>
+      </Box>
+    );
+  }
 
+  if (error) {
+    return (
+      <Box sx={{ textAlign: 'center', my: 8, color: 'error.main' }}>
+        <Typography variant="h6">
+          {error}
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 2 }}>
+          Please try refreshing the page or contact support if the problem persists.
+        </Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <>
+    <Box className="forum-header">
+              <Box sx={{ position: 'relative', zIndex: 1 }}>
+                <Container maxWidth="lg">
+                  <Grid container spacing={3} alignItems="center">
+                    <Grid item xs={12} md={7}>
+                      <Fade in={true} timeout={1000}>
+                        <Box sx={{ position: 'relative', zIndex: 2 }}>
+                          {/* Decorative elements */}
+                          <Box sx={{ 
+                            position: 'absolute', 
+                            top: -15, 
+                            right: { xs: -15, md: 20 }, 
+                            opacity: 0.15, 
+                            transform: 'rotate(15deg)',
+                            display: { xs: 'none', md: 'block' }
+                          }}>
+                            <MemoryIcon sx={{ fontSize: 120, color: 'white' }} />
+                          </Box>
+                          
+                          <Box sx={{ 
+                            position: 'absolute', 
+                            bottom: -30, 
+                            left: { xs: -15, md: 50 }, 
+                            opacity: 0.15,
+                            transform: 'rotate(-10deg)',
+                            display: { xs: 'none', md: 'block' }
+                          }}>
+                            <Code sx={{ fontSize: 100, color: 'white' }} />
+                          </Box>
+                          
+                          <Typography 
+                            variant="overline" 
+                            sx={{ 
+                              color: 'rgba(255,255,255,0.9)', 
+                              letterSpacing: 3, 
+                              fontWeight: 500,
+                              fontSize: '0.95rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                              mb: 1
+                            }}
+                          >
+                            <ElectricBoltIcon fontSize="small" /> VERILOG COMMUNITY
+                          </Typography>
+                          <Typography 
+                            variant="h2" 
+                            component="h1" 
+                            sx={{ 
+                              fontWeight: 800, 
+                              letterSpacing: -0.5,
+                              fontSize: { xs: '2.5rem', md: '3.5rem' },
+                              lineHeight: 1.1,
+                              background: 'linear-gradient(90deg, #ffffff 0%, #e1bee7 100%)',
+                              backgroundClip: 'text',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              mb: 3
+                            }}
+                          >
+                            VeriGeek Learning Modules
+                          </Typography>
+                          <Typography 
+                            variant="h6" 
+                            sx={{ 
+                              maxWidth: '700px',
+                              fontWeight: 400,
+                              fontSize: { xs: '1rem', md: '1.25rem' },
+                              lineHeight: 1.5,
+                              color: 'rgba(255,255,255,0.85)',
+                              mb: 3
+                            }}
+                          >
+                       Browse our comprehensive collection of Verilog modules designed to take you from beginner to expert. Each module contains theory, examples, and hands-on exercises.
+                          </Typography>
+                          
+                        </Box>
+                      </Fade>
+                    </Grid>
+                    
+                    <Grid item xs={12} md={5}>
+                      <Zoom in={true} style={{ transitionDelay: '300ms' }}>
+                        <Box sx={{ textAlign: 'center' }}>
+                          <img
+                            src="/forum-illustration.svg"
+                            alt="Verilog Forum"
+                            style={{ maxWidth: '100%', height: 'auto' }}
+                            onError={(e) => { e.target.style.display = 'none' }}
+                          />
+                        </Box>
+                      </Zoom>
+                    </Grid>
+                  </Grid>
+                  
+                  {/* Stats */}
+                  <Fade in={true} timeout={1000} style={{ transitionDelay: '500ms' }}>
+                    <Box sx={{ 
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: { xs: 4, md: 8 },
+                      mt: 4,
+                      justifyContent: { xs: 'center', md: 'flex-start' },
+                      color: 'rgba(255,255,255,0.9)'
+                    }}>
+                     
+                    </Box>
+                  </Fade>
+                </Container>
+              </Box>
+                 
+                    {/* Wave shape divider */}
+                    <Box className="wave-shape">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        viewBox="0 0 1200 120" 
+                        preserveAspectRatio="none"
+                      >
+                        <path 
+                          d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                        ></path>
+                      </svg>
+                    </Box>
+                  </Box>
+            
+
+    <Box className="container page-container">
+
+
+      
       {/* Search and Filters */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={6}>
@@ -135,16 +356,16 @@ const Modules = () => {
                   <CardMedia
                     component="img"
                     height="160"
-                    image={module.image}
+                    image={module.image || '/placeholder-module.jpg'}
                     alt={module.title}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" component="h3" gutterBottom noWrap>
-                      {typeof module.title === 'string' ? module.title : String(module.title)}
+                      {module.title}
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
                       <Chip 
-                        label={typeof module.level === 'string' ? module.level : String(module.level)} 
+                        label={module.level} 
                         size="small" 
                         sx={{ 
                           backgroundColor: module.level === 'Beginner' ? '#e3f2fd' : 
@@ -157,20 +378,20 @@ const Modules = () => {
                       />
                     </Box>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {typeof module.description === 'string' ? module.description : String(module.description)}
+                      {module.description}
                     </Typography>
                     <Box sx={{ mt: 1, mb: 2 }}>
-                      {module.topics && Array.isArray(module.topics) && module.topics.slice(0, 3).map((topic, index) => (
+                      {module.skills && module.skills.map((topic, index) => (
                         <Chip
                           key={index}
-                          label={typeof topic === 'string' ? topic : String(topic)}
+                          label={topic}
                           size="small"
                           sx={{ mr: 0.5, mb: 0.5, backgroundColor: 'rgba(106, 13, 173, 0.08)', fontSize: '0.7rem' }}
                         />
                       ))}
-                      {module.topics && Array.isArray(module.topics) && module.topics.length > 3 && (
+                      {module.skills &&  (
                         <Chip
-                          label={`+${module.topics.length - 3} more`}
+                          label={`+${module.skills.length} more`}
                           size="small"
                           sx={{ mb: 0.5, backgroundColor: 'rgba(106, 13, 173, 0.04)', fontSize: '0.7rem' }}
                         />
@@ -179,10 +400,10 @@ const Modules = () => {
                     <Divider sx={{ my: 1 }} />
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                       <Typography variant="body2" color="text.secondary">
-                        ⭐ {typeof module.rating === 'string' || typeof module.rating === 'number' ? module.rating : '4.8'} ({typeof module.students === 'string' || typeof module.students === 'number' ? module.students : '8750'})
+                        ⭐ {module.rating || '4.8'} ({module.students || '0'})
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {module.chapters && Array.isArray(module.chapters) ? module.chapters.length : 16} chapters • {module.exercises && Array.isArray(module.exercises) ? module.exercises.length : 5} exercises
+                        {module.chapters ? module.chapters.length : 0} chapters • {module.exercises ? module.exercises.length : 0} exercises
                       </Typography>
                     </Box>
                   </CardContent>
@@ -217,7 +438,8 @@ const Modules = () => {
         </Box>
       )}
     </Box>
+    </>
   );
 };
 
-export default Modules; 
+export default Modules;
