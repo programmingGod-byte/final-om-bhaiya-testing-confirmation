@@ -131,7 +131,7 @@ function WorkSpaceCodeEditor() {
                 verilogCode: codeContent,
                 testbenchCode: testbenchContent
             });
-            
+            console.log(res.data)
             if (res.data.waveform) {
                 setWaveformBlobURL(res.data.waveform);
             }
@@ -400,7 +400,7 @@ function WorkSpaceCodeEditor() {
                                     {output}
                                 </pre>
                             ) : (
-                                <div className="h-full bg-gray-950 rounded-md border border-gray-800 overflow-hidden">
+                                <div className="h-full bg-gray-950 rounded-md border border-gray-800 overflow-auto">
                                     {waveFormBlobUrl ? (
                                         <iframe
                                             title="Visual Output"
