@@ -1,82 +1,112 @@
-import React, { useState ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
-import axios from "axios"
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import URLSITE from "../constant"
-const generateId = () => {
-  return Math.random().toString(36).substr(2, 39); // Generate a random 9-character ID
-}
+import URLSITE from '../constant';
+
+const generateId = () => Math.random().toString(36).substr(2, 9);
 
 const VerilogModuleEditor = () => {
-
-
-
-
-
-
   const [activeTab, setActiveTab] = useState('overview');
 
+  // Module info now includes moduleType ('free' or 'paid')
   const [moduleInfo, setModuleInfo] = useState({
-    id: '', title: '', description: '', image: '', level: '', duration: '', rating: '',
-    studentsCount: '', completed: '', totalChapters: '', progress: '', updatedAt: '',
-    lessons: '', exercises: '', students: '', overview: ''
+    moduleType: 'free',
+    id: '',
+    title: '',
+    description: '',
+    image: '',
+    level: '',
+    duration: '',
+    rating: '',
+    studentsCount: '',
+    completed: '',
+    totalChapters: '',
+    progress: '',
+    updatedAt: '',
+    lessons: '',
+    exercises: '',
+    students: '',
+    overview: ''
   });
-  const navigator = useNavigate()
+
   const [learnItems, setLearnItems] = useState(['']);
   const [skills, setSkills] = useState(['']);
   const [prerequisites, setPrerequisites] = useState(['']);
   const [resources, setResources] = useState([{ title: '', type: 'PDF', link: '' }]);
-  const [overviewCodeSamples, setOverviewCodeSamples] = useState([
-    { title: '', code: '' }
-  ]);
+  const [overviewCodeSamples, setOverviewCodeSamples] = useState([{ title: '', code: '' }]);
   const [codeExamples, setCodeExamples] = useState([
     { id: generateId(), title: '', description: '', difficulty: '', type: '', completed: false, code: '', testbench: '' }
   ]);
 
+  const navigator = useNavigate();
+
+  // Generic handler supports text, select, radio, checkbox
   const handleModuleChange = (e) => {
-    setModuleInfo({ ...moduleInfo, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setModuleInfo({
+      ...moduleInfo,
+      [name]: type === 'checkbox' ? checked : value
+    });
   };
 
-  const handleConvertToJSON = async() => {
-    const { about, ...rest } = moduleInfo;
+  const handleConvertToJSON = async () => {
     const finalData = {
-      ...rest,
+      ...moduleInfo,
       learnItems,
       skills,
       prerequisites,
       resources,
       overviewCodeSamples,
-      codeExamples,
+      codeExamples
     };
+
+    finalData['completed'] = false
     console.log('📦 Final JSON Output:', JSON.stringify(finalData, null, 2));
-    let finalStringData = JSON.stringify(finalData, null, 2)
 
     try {
-      const response = await axios.post(`${URLSITE}/api/modules/create-module`, finalStringData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log(response)
-      alert("module uploded succesfully")
-      navigator('/ckeditor2')
-
+      
+      const response = await axios.post(
+        `${URLSITE}/api/modules/create-module`,
+        JSON.stringify(finalData),
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      console.log(response);
+      alert('Module uploaded successfully');
+      navigator('/ckeditor2');
     } catch (error) {
-      console.log(error)
-        if((error?.response?.data?.error?.message)){
-          alert(error.response.data.error.message)
-        }else{
-          alert(error)
-        }
+      console.error(error);
+      const message = error?.response?.data?.error?.message || error.message;
+      alert(message);
     }
-
-
-    
-
   };
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
+      {/* Access Type Selection */}
+      <div className="flex items-center space-x-6 mb-6">
+        <label className="flex items-center space-x-2">
+          <input
+            type="radio"
+            name="moduleType"
+            value="free"
+            checked={moduleInfo.moduleType === 'free'}
+            onChange={handleModuleChange}
+          />
+          <span>Free</span>
+        </label>
+        <label className="flex items-center space-x-2">
+          <input
+            type="radio"
+            name="moduleType"
+            value="paid"
+            checked={moduleInfo.moduleType === 'paid'}
+            onChange={handleModuleChange}
+          />
+          <span>Paid</span>
+        </label>
+      </div>
+
       {/* Tabs */}
       <div className="flex border-b mb-6">
         {['overview', 'code-examples'].map((tab) => (
@@ -84,7 +114,9 @@ const VerilogModuleEditor = () => {
             key={tab}
             className={clsx(
               'px-4 py-2 font-medium capitalize',
-              activeTab === tab ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'
+              activeTab === tab
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-600'
             )}
             onClick={() => setActiveTab(tab)}
           >
@@ -98,31 +130,34 @@ const VerilogModuleEditor = () => {
         <>
           <h1 className="text-3xl font-bold">Edit Verilog Module Overview</h1>
 
-          {/* Module Info */}
+          {/* Module Info Inputs */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.keys(moduleInfo).map((key, idx) =>
-              key !== 'overview' ? (
-                <input  required
-                  key={idx}
-                  name={key}
-                  placeholder={key}
-                  value={moduleInfo[key]}
-                  onChange={handleModuleChange}
-                  className="p-2 border rounded-lg"
-                />
-              ) : null
+            {Object.keys(moduleInfo).map(
+              (key, idx) =>
+                key !== 'overview' && (
+                  <input
+                    required
+                    key={idx}
+                    name={key}
+                    placeholder={key}
+                    value={moduleInfo[key]}
+                    onChange={handleModuleChange}
+                    className="p-2 border rounded-lg"
+                  />
+                )
             )}
           </div>
 
-          {/* Overview Section */}
+          {/* Overview Description */}
           <div>
             <h2 className="font-semibold mt-4">Overview of the Module</h2>
             <textarea
               className="w-full p-2 border rounded"
               rows={4}
               placeholder="Overview of the module"
+              name="overview"
               value={moduleInfo.overview}
-              onChange={(e) => setModuleInfo({ ...moduleInfo, overview: e.target.value })}
+              onChange={handleModuleChange}
             />
           </div>
 
@@ -130,7 +165,8 @@ const VerilogModuleEditor = () => {
           <div>
             <h2 className="font-semibold mt-4">What You'll Learn</h2>
             {learnItems.map((item, index) => (
-              <input  required
+              <input
+                required
                 key={index}
                 className="w-full p-2 my-1 border rounded"
                 value={item}
@@ -149,11 +185,12 @@ const VerilogModuleEditor = () => {
             </button>
           </div>
 
-          {/* Skills */}
+          {/* Skills You'll Gain */}
           <div>
             <h2 className="font-semibold mt-4">Skills You'll Gain</h2>
             {skills.map((skill, index) => (
-              <input  required
+              <input
+                required
                 key={index}
                 className="w-full p-2 my-1 border rounded"
                 value={skill}
@@ -176,7 +213,8 @@ const VerilogModuleEditor = () => {
           <div>
             <h2 className="font-semibold mt-4">Prerequisites</h2>
             {prerequisites.map((item, index) => (
-              <input  required
+              <input
+                required
                 key={index}
                 className="w-full p-2 my-1 border rounded"
                 value={item}
@@ -236,7 +274,7 @@ const VerilogModuleEditor = () => {
             <h2 className="font-semibold mt-4">Additional Resources</h2>
             {resources.map((res, index) => (
               <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                <input  
+                <input
                   className="p-2 border rounded"
                   placeholder="Title"
                   value={res.title}
@@ -259,7 +297,8 @@ const VerilogModuleEditor = () => {
                   <option value="Video">Video</option>
                   <option value="Image">Image</option>
                 </select>
-                <input  required
+                <input
+                  required
                   className="p-2 border rounded"
                   placeholder="Link"
                   value={res.link}
@@ -294,7 +333,8 @@ const VerilogModuleEditor = () => {
           <h1 className="text-3xl font-bold">Code Examples</h1>
           {codeExamples.map((ex, index) => (
             <div key={index} className="space-y-3 mb-6 border p-4 rounded-lg">
-              <input  required
+              <input
+                required
                 className="w-full p-2 border rounded"
                 placeholder="ID"
                 value={ex.id}
@@ -304,7 +344,8 @@ const VerilogModuleEditor = () => {
                   setCodeExamples(updated);
                 }}
               />
-              <input  required
+              <input
+                required
                 className="w-full p-2 border rounded"
                 placeholder="Title"
                 value={ex.title}
@@ -325,7 +366,8 @@ const VerilogModuleEditor = () => {
                   setCodeExamples(updated);
                 }}
               />
-              <input  required
+              <input
+                required
                 className="w-full p-2 border rounded"
                 placeholder="Difficulty"
                 value={ex.difficulty}
@@ -335,7 +377,8 @@ const VerilogModuleEditor = () => {
                   setCodeExamples(updated);
                 }}
               />
-              <input  required
+              <input
+                required
                 className="w-full p-2 border rounded"
                 placeholder="Type"
                 value={ex.type}
@@ -346,7 +389,8 @@ const VerilogModuleEditor = () => {
                 }}
               />
               <label className="flex items-center space-x-2">
-                <input  required
+                <input
+                  required
                   type="checkbox"
                   checked={ex.completed}
                   onChange={(e) => {
@@ -392,9 +436,7 @@ const VerilogModuleEditor = () => {
             onClick={() =>
               setCodeExamples([
                 ...codeExamples,
-                {
-                  id: generateId(), title: '', description: '', difficulty: '', type: '', completed: false, code: '', testbench: ''
-                }
+                { id: generateId(), title: '', description: '', difficulty: '', type: '', completed: false, code: '', testbench: '' }
               ])
             }
           >

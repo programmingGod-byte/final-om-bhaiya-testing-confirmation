@@ -17,7 +17,7 @@ import AuthContext from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import URL from "../constant";
-
+import fetchProfile from "../context/authAccessContext";
 const icons = [
   <BarChart key="bar-chart" className="h-5 w-5" />,
   <Layout key="layout" className="h-5 w-5" />,
@@ -69,6 +69,7 @@ export default function WorkSpace() {
 
   const [projects, setProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");  // State for search term
+  
 
   useEffect(() => {
     const fetchProjects = async () => {

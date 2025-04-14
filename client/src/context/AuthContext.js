@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from "axios"
 import { useNavigate } from 'react-router-dom';
+import URLSITE from '../constant';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -17,12 +18,14 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('VeriGeektoken');
       console.log(token)
       try {
-        const res = await axios.get('http://localhost:5000/api/auth/profile', {
+        const res = await axios.get(`${URLSITE}/api/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log(res.data)
+        console.log("AUTH CONTEXT DATA")
         if(res.status==200){
           setUser(res.data)
+          setIsAuthenticated(true)
         }else{
           navigate('/login')
         }
@@ -37,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     
     
     
-  }, []);
+  }, [navigate]);
 
   
 

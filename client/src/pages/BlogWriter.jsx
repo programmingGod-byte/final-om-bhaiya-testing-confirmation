@@ -1,40 +1,59 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import URLSITE from '../constant';
+
+const predefinedTags = [
+  { value: 'all' },
+  { value: 'vlsi' },
+  { value: 'electronics' },
+  { value: 'diy-electronics' },
+  { value: 'electrical-engineering' },
+  { value: 'electronics-design' },
+  { value: 'fpga' }
+];
+
 const BlogForm = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [tags, setTags] = useState(['']);
+  const [tags, setTags] = useState([]);             // start empty
   const [spectrum, setSpectrum] = useState(['']);
   const [paperLink, setPaperLink] = useState('');
   const [modal, setModal] = useState({ show: false, message: '', error: false });
 
-  const handleAddField = (stateSetter, current) => {
-    stateSetter([...current, '']);
+  // Spectrum helpers (unchanged)
+  const handleAddField = (setter, current) => setter([...current, '']);
+  const handleRemoveField = (setter, current, idx) => {
+    const copy = [...current];
+    copy.splice(idx, 1);
+    setter(copy);
+  };
+  const handleFieldChange = (setter, current, idx, value) => {
+    const copy = [...current];
+    copy[idx] = value;
+    setter(copy);
   };
 
-  const handleRemoveField = (stateSetter, current, index) => {
-    const newList = [...current];
-    newList.splice(index, 1);
-    stateSetter(newList);
+  // Tag handlers
+  const handleAddTag = e => {
+    const val = e.target.value;
+    if (val && !tags.includes(val)) {
+      setTags([...tags, val]);
+    }
+    e.target.selectedIndex = 0; // reset dropdown
   };
-
-  const handleFieldChange = (stateSetter, current, index, value) => {
-    const newList = [...current];
-    newList[index] = value;
-    stateSetter(newList);
+  const handleDeleteTag = tagToRemove => {
+    setTags(tags.filter(t => t !== tagToRemove));
   };
 
   const handleSubmit = async () => {
-    const cleanedTags = tags.filter(tag => tag.trim() !== '');
-    const cleanedSpectrum = spectrum.filter(item => item.trim() !== '');
+    const cleanedSpectrum = spectrum.filter(s => s.trim() !== '');
 
     if (
       !imageUrl.trim() ||
       !title.trim() ||
       !description.trim() ||
-      cleanedTags.length === 0 ||
+      tags.length === 0 ||
       cleanedSpectrum.length === 0 ||
       !paperLink.trim()
     ) {
@@ -47,15 +66,13 @@ const BlogForm = () => {
         imageUrl,
         title,
         description,
-        tags: cleanedTags,
+        tags,
         spectrum: cleanedSpectrum,
         paperLink: paperLink.trim(),
       };
-
-      console.log(payload)
-      const res = await axios.post(`${URLSITE}/api/admin/blog-upload`, payload);
+      await axios.post(`${URLSITE}/api/admin/blog-upload`, payload);
       setModal({ show: true, message: 'Blog submitted successfully!', error: false });
-    } catch (err) {
+    } catch {
       setModal({ show: true, message: 'Error submitting blog', error: true });
     }
   };
@@ -87,48 +104,60 @@ const BlogForm = () => {
         className="w-full border rounded px-3 py-2 min-h-[120px]"
       />
 
-      {/* Tags */}
+      {/* Tags (select from predefinedTags) */}
       <div>
         <label className="font-semibold">Tags</label>
-        {tags.map((tag, index) => (
-          <div key={index} className="flex items-center gap-2 mt-2">
-            <input
-              type="text"
-              value={tag}
-              onChange={e => handleFieldChange(setTags, tags, index, e.target.value)}
-              className="flex-1 border rounded px-3 py-1"
-              placeholder="Enter tag"
-            />
-            <button
-              onClick={() => handleRemoveField(setTags, tags, index)}
-              className="text-red-500 hover:text-red-700 text-sm"
-            >
-              ✕
-            </button>
-          </div>
-        ))}
-        <button
-          onClick={() => handleAddField(setTags, tags)}
-          className="mt-2 text-blue-500 hover:underline text-sm"
-        >
-          + Add Tag
-        </button>
+        <div className="mt-2">
+          <select
+            defaultValue=""
+            onChange={handleAddTag}
+            className="border rounded px-3 py-2"
+          >
+            <option value="" disabled>
+              -- select a tag --
+            </option>
+            {predefinedTags.map(tag => (
+              <option key={tag.value} value={tag.value}>
+                {tag.value}
+              </option>
+            ))}
+          </select>
+        </div>
+        {tags.length > 0 && (
+          <ul className="flex flex-wrap gap-2 mt-3">
+            {tags.map(tag => (
+              <li
+                key={tag}
+                className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTag(tag)}
+                  className="ml-2 text-blue-600 hover:text-blue-800 font-bold"
+                >
+                  &times;
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      {/* Spectrum */}
+      {/* Spectrum (free-text dynamic fields) */}
       <div>
         <label className="font-semibold">Spectrum</label>
-        {spectrum.map((item, index) => (
-          <div key={index} className="flex items-center gap-2 mt-2">
+        {spectrum.map((item, idx) => (
+          <div key={idx} className="flex items-center gap-2 mt-2">
             <input
               type="text"
               value={item}
-              onChange={e => handleFieldChange(setSpectrum, spectrum, index, e.target.value)}
+              onChange={e => handleFieldChange(setSpectrum, spectrum, idx, e.target.value)}
               className="flex-1 border rounded px-3 py-1"
               placeholder="Enter spectrum"
             />
             <button
-              onClick={() => handleRemoveField(setSpectrum, spectrum, index)}
+              onClick={() => handleRemoveField(setSpectrum, spectrum, idx)}
               className="text-red-500 hover:text-red-700 text-sm"
             >
               ✕

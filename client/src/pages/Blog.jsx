@@ -45,6 +45,18 @@ const Blog = () => {
     { value: 'fpga', label: 'FPGA' }
   ];
   
+
+
+  const cfategories = [
+    { value: 'all', },
+    { value: 'vlsi' },
+    { value: 'electronics'},
+    { value: 'diy-electronics'},
+    { value: 'electrical-engineering'},
+    { value: 'electronics-design'},
+    { value: 'fpga'}
+  ];
+  
   // Fetch blogs function
   const fetchBlogs = useCallback(() => {
     setLoading(true);

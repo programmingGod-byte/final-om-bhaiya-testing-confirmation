@@ -12,6 +12,7 @@ const morgan = require('morgan');
 // Load env vars
 const moduleRoutes = require('./src/routes/ModulesConf')
 const adminRoutes = require('./src/routes/adminRoutes')
+const generalRoute = require('./src/routes/generalRoute')
 const app = express();
 
 // Middleware
@@ -43,6 +44,8 @@ app.use('/api/auth',authRoutes)
 app.use('/api/workspace/',workSpaceRoutes)
 app.use('/api/modules',moduleRoutes)
 app.use('/api/admin',adminRoutes)
+
+app.use('/api/general',generalRoute)
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')));

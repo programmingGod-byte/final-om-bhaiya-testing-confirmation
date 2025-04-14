@@ -77,6 +77,7 @@ const Header = () => {
     { text: 'Research', to: '/research', icon: <MenuBook /> },
     { text: 'Blog', to: '/blog', icon: <MenuBook /> },
     { text: 'Careers', to: '/careers', icon: <Work /> },
+    { text: 'Pricing', to: '/pricing', icon: <Work /> },
   ]
   const [navLinks,setnavLink] = useState([
     { text: 'Home', to: '/', icon: <Dashboard /> },
@@ -87,6 +88,7 @@ const Header = () => {
     { text: 'Research', to: '/research', icon: <MenuBook /> },
     { text: 'Blog', to: '/blog', icon: <MenuBook /> },
     { text: 'Careers', to: '/careers', icon: <Work /> },
+    { text: 'Pricing', to: '/pricing', icon: <Work /> },
     
   ]);
 
@@ -95,7 +97,7 @@ const Header = () => {
     if(context.user.email){
       setIsLoggedIn(true)
     }
-    if(context.user.email=="shivam.kumar262200628@gmail.com"){
+    if(context.user.email=="verigeektech@gmail.com"){
         setAdminUser(true);
         setnavLink([...LINKS, { text: 'Add module', to: '/ckeditor', icon: <Work /> },
           { text: 'Add chapter', to: '/ckeditor2', icon: <Work /> },
@@ -160,7 +162,7 @@ const Header = () => {
       </List>
       <Divider />
       
-      {isLoggedIn ? (
+      {context.isAuthenticated ? (
         <List>
           <ListItem button component={Link} to="/profile">
             <ListItemIcon><Person /></ListItemIcon>

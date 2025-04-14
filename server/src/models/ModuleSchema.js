@@ -145,12 +145,17 @@ const CourseSchema = new mongoose.Schema({
       type: String,
     },
   ],
+  
   prerequisites: [
     {
       type: String,
     },
 
   ],
+  moduleType:{
+    type:String,
+    required:true
+  },
   resources: [ResourceSchema],
   overviewCodeSamples: [OverviewCodeSampleSchema],
   codeExamples: [CodeExampleSchema],

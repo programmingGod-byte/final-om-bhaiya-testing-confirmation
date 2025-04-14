@@ -27,7 +27,8 @@ router.get('/profile', async (req, res) => {
         console.log(user)
       res.status(200).json({
         name:user.name,
-        email:user.email
+        email:user.email,
+        wholeData:user
       });
     } catch (err) {
       res.sendStatus(403);

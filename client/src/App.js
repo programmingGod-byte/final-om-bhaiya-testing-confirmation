@@ -32,7 +32,8 @@ import WorkSpace from './pages/workSpace';
 import CKEditorWithJson from './pages/Ckeditor';
 import ModuleChapterEditor from './pages/Ckeditor2';
 import BlogWriter from './pages/BlogWriter';
-
+import UserProfile from './pages/ProfilePage';
+import PricingPage from './pages/PricingPage';
 // Switch manually for now
 const currentTheme = lightTheme;
 
@@ -152,6 +153,14 @@ function App() {
     {
       path:"/qfileuploaderchecker",
       element:<FileUploader/>
+    },
+    {
+      path:"/profile",
+      element:<UserProfile/>
+    },
+    {
+      path:"/pricing",
+      element:<PricingPage/>
     },
     {
       path: "*",

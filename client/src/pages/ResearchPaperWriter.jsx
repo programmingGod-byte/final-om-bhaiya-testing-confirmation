@@ -1,59 +1,47 @@
 import React, { useState } from 'react';
 import URLSITE from '../constant';
 
+const popularTags = [
+  'UVM', 'RISC-V', 'FPGA', 'SystemVerilog', 'Verification', 'Low Power',
+  'Machine Learning', 'EDA Tools', 'RTL Design', 'Formal Verification',
+  'Power Analysis', 'Hardware Security'
+];
+
 const PaperForm = () => {
   const [imageUri, setImageUri] = useState('');
   const [title, setTitle] = useState('');
   const [authors, setAuthors] = useState(['']);
   const [description, setDescription] = useState('');
   const [paperType, setPaperType] = useState('IEEE');
-  const [whatItCovers, setWhatItCovers] = useState(['']);
+  const [whatItCovers, setWhatItCovers] = useState(['']);  // holds selected tags
   const [source, setSource] = useState('IEEE');
   const [researchPaperLink, setResearchPaperLink] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const [modalType, setModalType] = useState('success'); // 'success' or 'error'
+  const [modalType, setModalType] = useState('success');
 
-  // Handle changes in the author input
-  const handleAuthorChange = (index, event) => {
+  // --- Authors handlers (unchanged) ---
+  const handleAuthorChange = (idx, e) => {
     const newAuthors = [...authors];
-    newAuthors[index] = event.target.value;
+    newAuthors[idx] = e.target.value;
     setAuthors(newAuthors);
   };
+  const addAuthor = () => setAuthors([...authors, '']);
+  const deleteAuthor = (idx) => setAuthors(authors.filter((_, i) => i !== idx));
 
-  // Add new author field
-  const addAuthor = () => {
-    setAuthors([...authors, '']);
+  // --- What-it-covers handlers (now only selects) ---
+  const handleWhatItCoversChange = (idx, e) => {
+    const newCovers = [...whatItCovers];
+    newCovers[idx] = e.target.value;
+    setWhatItCovers(newCovers);
   };
+  const addWhatItCovers = () => setWhatItCovers([...whatItCovers, '']);
+  const deleteWhatItCovers = (idx) =>
+    setWhatItCovers(whatItCovers.filter((_, i) => i !== idx));
 
-  // Delete author field
-  const deleteAuthor = (index) => {
-    const newAuthors = authors.filter((_, i) => i !== index);
-    setAuthors(newAuthors);
-  };
-
-  // Handle changes in the "What it covers" input
-  const handleWhatItCoversChange = (index, event) => {
-    const newWhatItCovers = [...whatItCovers];
-    newWhatItCovers[index] = event.target.value;
-    setWhatItCovers(newWhatItCovers);
-  };
-
-  // Add new "What it covers" field
-  const addWhatItCovers = () => {
-    setWhatItCovers([...whatItCovers, '']);
-  };
-
-  // Delete "What it covers" field
-  const deleteWhatItCovers = (index) => {
-    const newWhatItCovers = whatItCovers.filter((_, i) => i !== index);
-    setWhatItCovers(newWhatItCovers);
-  };
-
-  // Handle form submission
+  // --- Submit ---
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formData = {
       imageUri,
       title,
@@ -62,50 +50,37 @@ const PaperForm = () => {
       paperType,
       whatItCovers,
       source,
-      researchPaperLink, // Added the research paper link
+      researchPaperLink,
     };
-    console.log(formData)
-
     try {
-      // Make a POST request to the server
-      const response = await fetch(`${URLSITE}/api/admin/research-paper-upload`, {
+      const resp = await fetch(`${URLSITE}/api/admin/research-paper-upload`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
-      const data = await response.json();
-
-      // Show success or error message in the modal
-      if (response.ok) {
+      if (resp.ok) {
         setModalMessage('Your paper has been submitted successfully!');
         setModalType('success');
       } else {
         setModalMessage('Something went wrong. Please try again.');
         setModalType('error');
       }
-      setShowModal(true);
-    } catch (err) {
+    } catch {
       setModalMessage('Network error. Please try again.');
       setModalType('error');
-      setShowModal(true);
     }
-  };
-
-  // Close the modal
-  const closeModal = () => {
-    setShowModal(false);
+    setShowModal(true);
   };
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-lg">
       <h2 className="text-3xl font-semibold mb-8 text-center">Submit Your Paper</h2>
       <form onSubmit={handleSubmit}>
-        {/* Image URI Input */}
+        {/* Image URI */}
         <div className="mb-6">
-          <label htmlFor="imageUri" className="block text-lg font-medium text-gray-700">Image URI</label>
+          <label htmlFor="imageUri" className="block text-lg font-medium text-gray-700">
+            Image URI
+          </label>
           <input
             type="text"
             id="imageUri"
@@ -116,9 +91,11 @@ const PaperForm = () => {
           />
         </div>
 
-        {/* Title Input */}
+        {/* Title */}
         <div className="mb-6">
-          <label htmlFor="title" className="block text-lg font-medium text-gray-700">Title</label>
+          <label htmlFor="title" className="block text-lg font-medium text-gray-700">
+            Title
+          </label>
           <input
             type="text"
             id="title"
@@ -129,26 +106,27 @@ const PaperForm = () => {
           />
         </div>
 
-        {/* Authors Section */}
+        {/* Authors */}
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700">Authors</label>
-          {authors.map((author, index) => (
-            <div key={index} className="flex items-center space-x-4 mb-3">
+          {authors.map((author, idx) => (
+            <div key={idx} className="flex items-center space-x-4 mb-3">
               <input
                 type="text"
                 className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Enter author name"
                 value={author}
-                onChange={(e) => handleAuthorChange(index, e)}
+                onChange={(e) => handleAuthorChange(idx, e)}
+                required
               />
               <button
                 type="button"
-                onClick={() => deleteAuthor(index)}
+                onClick={() => deleteAuthor(idx)}
                 className="text-red-500 hover:text-red-700"
               >
                 Delete
               </button>
-              {index === authors.length - 1 && (
+              {idx === authors.length - 1 && (
                 <button
                   type="button"
                   onClick={addAuthor}
@@ -161,9 +139,11 @@ const PaperForm = () => {
           ))}
         </div>
 
-        {/* Description Input */}
+        {/* Description */}
         <div className="mb-6">
-          <label htmlFor="description" className="block text-lg font-medium text-gray-700">Description</label>
+          <label htmlFor="description" className="block text-lg font-medium text-gray-700">
+            Description
+          </label>
           <textarea
             id="description"
             className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -174,9 +154,11 @@ const PaperForm = () => {
           />
         </div>
 
-        {/* Paper Type Select */}
+        {/* Paper Type */}
         <div className="mb-6">
-          <label htmlFor="paperType" className="block text-lg font-medium text-gray-700">Type of Paper</label>
+          <label htmlFor="paperType" className="block text-lg font-medium text-gray-700">
+            Type of Paper
+          </label>
           <select
             id="paperType"
             className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -192,41 +174,51 @@ const PaperForm = () => {
           </select>
         </div>
 
-        {/* What it covers Section */}
+        {/* What it covers (select only) */}
         <div className="mb-6">
           <label className="block text-lg font-medium text-gray-700">What it covers</label>
-          {whatItCovers.map((cover, index) => (
-            <div key={index} className="flex items-center space-x-4 mb-3">
-              <input
-                type="text"
+          {whatItCovers.map((tag, idx) => (
+            <div key={idx} className="flex items-center space-x-4 mb-3">
+              <select
+                value={tag}
+                onChange={(e) => handleWhatItCoversChange(idx, e)}
                 className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="What does this paper cover?"
-                value={cover}
-                onChange={(e) => handleWhatItCoversChange(index, e)}
-              />
+                required
+              >
+                <option value="" disabled>
+                  -- select a topic --
+                </option>
+                {popularTags.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
               <button
                 type="button"
-                onClick={() => deleteWhatItCovers(index)}
+                onClick={() => deleteWhatItCovers(idx)}
                 className="text-red-500 hover:text-red-700"
               >
                 Delete
               </button>
-              {index === whatItCovers.length - 1 && (
+              {idx === whatItCovers.length - 1 && (
                 <button
                   type="button"
                   onClick={addWhatItCovers}
                   className="text-blue-500 hover:text-blue-700"
                 >
-                  Add What it Covers
+                  Add Topic
                 </button>
               )}
             </div>
           ))}
         </div>
 
-        {/* Research Paper Link Input */}
+        {/* Research Paper Link */}
         <div className="mb-6">
-          <label htmlFor="researchPaperLink" className="block text-lg font-medium text-gray-700">Research Paper Link</label>
+          <label htmlFor="researchPaperLink" className="block text-lg font-medium text-gray-700">
+            Research Paper Link
+          </label>
           <input
             type="url"
             id="researchPaperLink"
@@ -237,7 +229,7 @@ const PaperForm = () => {
           />
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <div className="mt-6">
           <button
             type="submit"
@@ -252,12 +244,16 @@ const PaperForm = () => {
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-            <h3 className={`text-xl font-semibold mb-4 ${modalType === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+            <h3
+              className={`text-xl font-semibold mb-4 ${
+                modalType === 'success' ? 'text-green-600' : 'text-red-600'
+              }`}
+            >
               {modalType === 'success' ? 'Success' : 'Error'}
             </h3>
             <p>{modalMessage}</p>
             <button
-              onClick={closeModal}
+              onClick={() => setShowModal(false)}
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
             >
               Close
