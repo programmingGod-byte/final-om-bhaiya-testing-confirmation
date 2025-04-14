@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import axios from "axios"
 import { 
   Box, Typography, Button, Grid, Card, CardContent, Breadcrumbs, 
   Tabs, Tab, List, ListItem, ListItemIcon, ListItemText, Divider, 
@@ -14,6 +15,7 @@ import {
 // Import the module data
 import { getModuleById } from '../data/modules';
 import { getModuleProgress, initializeProgressData } from '../utils/progressTracker';
+import URLSITE from '../constant';
 
 // Tab panel component for the module details
 function TabPanel({ children, value, index, ...other }) {
@@ -42,74 +44,40 @@ const ModuleDetail = () => {
   // Fetch module data
   useEffect(() => {
     // Simulating API fetch with a delay
-    setTimeout(() => {
+
+    const fetchDocument = async () => {
+      try {
+        console.log(id)
+        const { data } = await axios.get(`http://localhost:5000/api/general/get-module/67fce343a7529de10f5ff4d9`);
+        // setDocument(data);
+        setModule(data)
+        // setLoading(false);
+        console.log(data)
+      } catch (err) {
+        // setError('Error fetching document');
+        // setLoading(false);
+        console.log(err)
+      }
+    };
+
+    fetchDocument();
       const moduleData = getModuleById(id);
       
-      // Check if this module is bookmarked
-      const bookmarkedModules = JSON.parse(localStorage.getItem('bookmarkedModules') || '[]');
-      const isBookmarked = bookmarkedModules.some(
-        bookmark => bookmark.id === moduleData.id
-      );
       
       setModule({
         ...moduleData,
-        bookmarked: isBookmarked
       });
       
       setLoading(false);
       
-      // Initialize progress tracking for this module if needed
-      initializeProgressData(id, moduleData.chapters.map(ch => ch.id));
       
-      // Get the module progress
-      const moduleProgress = getModuleProgress(id);
-      setProgress(moduleProgress);
-    }, 800);
+  
   }, [id]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  // Handle module bookmarking
-  const handleBookmarkModule = () => {
-    if (!module) return;
-    
-    const bookmarkedModules = JSON.parse(localStorage.getItem('bookmarkedModules') || '[]');
-    
-    if (module.bookmarked) {
-      // Remove bookmark
-      const updatedBookmarks = bookmarkedModules.filter(
-        bookmark => bookmark.id !== module.id
-      );
-      localStorage.setItem('bookmarkedModules', JSON.stringify(updatedBookmarks));
-      setModule({
-        ...module,
-        bookmarked: false
-      });
-      setSnackbarMessage('Module removed from bookmarks');
-    } else {
-      // Add bookmark
-      const bookmarkData = {
-        id: module.id,
-        title: module.title,
-        description: module.description,
-        image: module.image,
-        level: module.level,
-        timestamp: new Date().toISOString()
-      };
-      
-      bookmarkedModules.push(bookmarkData);
-      localStorage.setItem('bookmarkedModules', JSON.stringify(bookmarkedModules));
-      setModule({
-        ...module,
-        bookmarked: true
-      });
-      setSnackbarMessage('Module bookmarked successfully! Access it anytime from your profile.');
-    }
-    
-    setSnackbarOpen(true);
-  };
 
   if (loading) {
     return (
@@ -132,12 +100,12 @@ const ModuleDetail = () => {
   }
 
   // Ensure required arrays exist to prevent "length of undefined" errors
-  const syllabus = module.syllabus || [];
+  const syllabus = module.learnItems || [];
   const exercises = module.exercises || [];
-  const practicalExamples = module.practicalExamples || [];
-  const codeExamples = module.codeExamples || [];
+  const practicalExamples = module.codeExamples || [];
+  const codeExamples = module.overviewCodeSamples || [];
   const resources = module.resources || [];
-  const relatedModules = module.relatedModules || [];
+  const relatedModules = [];
 
   const firstUncompletedChapter = module.chapters.find((chapter) => {
     // Check if this chapter is not completed
@@ -347,15 +315,9 @@ const ModuleDetail = () => {
             >
               {continueButtonText}
             </Button>
-            <Button 
-              variant="outlined" 
-              color="primary"
-              startIcon={<BookmarkAdd />}
-              sx={{ flexShrink: 0 }}
-              onClick={handleBookmarkModule}
-            >
-              {module.bookmarked ? 'Bookmarked' : 'Save'}
-            </Button>
+            
+              
+            
           </Box>
         </Grid>
       </Grid>
@@ -393,11 +355,11 @@ const ModuleDetail = () => {
                 <Typography variant="h5" gutterBottom sx={{ mt: 4, borderLeft: '4px solid #6a0dad', pl: 2 }}>What You'll Learn</Typography>
                 <Paper elevation={0} variant="outlined" sx={{ p: 3, borderRadius: 2, mb: 4 }}>
                   <Grid container spacing={2}>
-                    {syllabus.map((week, index) => (
+                    {module.learnItems.map((week, index) => (
                       <Grid item xs={12} sm={6} key={index}>
                         <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
                           <Check sx={{ color: 'success.main', mr: 1, mt: 0.3 }} />
-                          <Typography variant="body1">{typeof week.title === 'string' ? week.title : String(week.title)}</Typography>
+                          <Typography variant="body1">{typeof week === 'string' ? week : String(week)}</Typography>
                         </Box>
                       </Grid>
                     ))}
@@ -594,20 +556,6 @@ const ModuleDetail = () => {
                     }}
                   >
                     <Box sx={{ mr: 2, mt: 0.5 }}>
-                      {chapter.completed ? (
-                        <Box sx={{ 
-                          width: 32, 
-                          height: 32, 
-                          borderRadius: '50%', 
-                          bgcolor: 'success.main',
-                          color: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}>
-                          <Check fontSize="small" />
-                        </Box>
-                      ) : (
                         <Box sx={{ 
                           width: 32, 
                           height: 32, 
@@ -619,9 +567,8 @@ const ModuleDetail = () => {
                           justifyContent: 'center',
                           fontWeight: 'bold'
                         }}>
-                          {typeof chapter.id === 'string' || typeof chapter.id === 'number' ? chapter.id : String(chapter.id)}
                         </Box>
-                      )}
+                      
                     </Box>
                     
                     <Box sx={{ flexGrow: 1 }}>
@@ -671,13 +618,13 @@ const ModuleDetail = () => {
                     
                     <Button 
                       component={Link} 
-                      to={`/modules/${id}/chapters/${chapter.id}`}
+                      to={`/modules/${id}/chapters/${chapter.chapterId}`}
                       variant="outlined"
                       color="primary"
                       size="small"
                       sx={{ ml: 2, alignSelf: 'center', flexShrink: 0 }}
                     >
-                      {chapter.completed ? 'Revisit' : 'Start'}
+                      {'Start'}
                     </Button>
                   </Box>
                 </Box>
@@ -694,11 +641,7 @@ const ModuleDetail = () => {
               <Typography variant="body1">
                 Master your skills with these <strong>{practicalExamples.length || exercises.length} practical examples</strong>. Complete them to reinforce your learning.
               </Typography>
-              <Chip 
-                label={`${(practicalExamples || exercises).filter(ex => ex.completed).length}/${practicalExamples.length || exercises.length} Completed`}
-                color={(practicalExamples || exercises).filter(ex => ex.completed).length === (practicalExamples.length || exercises.length) ? "success" : "default"}
-                variant="outlined"
-              />
+              
             </Box>
             
             <Paper elevation={0} variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>

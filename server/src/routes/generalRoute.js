@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 const ResearchPaper = require('../models/ResearchPaperSchema');
 const BlogPaper = require("../models/BlogSchema")
-const moduleSchema = require("../models/ModuleSchema")
+const moduleSchema = require("../models/ModuleSchema");
+const { routes } = require('../../server');
 // GET /api/admin/research-papers
 // Returns all research papers in JSON
 
@@ -19,6 +20,24 @@ router.get("/all-modules",async (req,res)=>{
     res.status(500).json({ message: 'Server error while fetching papers' });
   }
 })
+
+router.get('/get-module/:id', async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: 'Document ID is required' });
+  }
+
+  try {
+    const document = await moduleSchema.findById(id);
+    if (!document) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+    res.json(document);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
 
 
 router.get('/research-papers', async (req, res) => {

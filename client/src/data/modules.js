@@ -21,7 +21,7 @@ export const getModuleById = (id) => {
     if (numericId === 23) return riscvProcessor;
   }
   
-  return null;
+  return riscvProcessor;
 };
 
 // Export all modules
