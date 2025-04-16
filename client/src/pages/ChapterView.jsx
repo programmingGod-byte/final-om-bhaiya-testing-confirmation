@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import axios from "axios"
 import { 
   Box, Typography, Button, Breadcrumbs, Paper, CircularProgress,
   Divider, IconButton, Drawer, List, ListItem, ListItemText,
@@ -21,6 +22,7 @@ import 'highlight.js/styles/googlecode.css';
 
 // Import Verilog highlighting - make sure you have this installed
 import 'highlight.js/lib/languages/verilog';
+import AuthContext from '../context/AuthContext';
 
 // Register Verilog language with highlight.js
 hljs.registerLanguage('verilog', require('highlight.js/lib/languages/verilog'));
@@ -42,7 +44,33 @@ const ChapterView = () => {
   const [error, setError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [progress, setProgress] = useState(null);
+  const context = useContext(AuthContext)
 
+  
+    useEffect(() => {
+      if(!context?.user) return;
+    
+      const handleFetchUser = async () => {
+        try {
+          const response = await axios.post(`${URLSITE}/api/general/user-by-email`, { email:context.user.wholeData.email });
+          
+          console.log(response.data);
+          if(response.status==200){
+            if(!response.data.paidModule.some(module => module.moduleId === moduleId)){
+              navigate(`/modules/${moduleId}`)
+            }
+          }
+          
+        } catch (err) {
+          console.error('Error fetching user:', err);
+          
+          
+        }
+      };
+  
+        handleFetchUser()
+  }, [context.user])
+  
 
   useEffect(() => {
     document.querySelectorAll('pre code').forEach((block) => {

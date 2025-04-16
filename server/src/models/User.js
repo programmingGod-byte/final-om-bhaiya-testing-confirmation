@@ -74,6 +74,18 @@ const UserSchema = new mongoose.Schema({
           type: String,
           required: true
         },
+        moduleImageUri:{
+          type:String,
+          required:true,
+        },
+        moduleTitle:{
+          type:String,
+          required:true,
+        },
+        moduleDesc:{
+          type:String,
+          required:true,
+        },
         razorpay_order_id: {
           type: String,
           required: true

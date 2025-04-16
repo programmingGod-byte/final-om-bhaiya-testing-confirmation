@@ -4,6 +4,7 @@ const router = express.Router();
 const ResearchPaper = require('../models/ResearchPaperSchema');
 const BlogPaper = require("../models/BlogSchema")
 const moduleSchema = require("../models/ModuleSchema");
+const User = require("../models/User")
 const { routes } = require('../../server');
 // GET /api/admin/research-papers
 const Chapter = require("../models/Chapters")
@@ -115,6 +116,29 @@ router.get('/blogs', async (req, res) => {
     } catch (err) {
       console.error('Error fetching research papers:', err);
       res.status(500).json({ message: 'Server error while fetching papers' });
+    }
+  });
+  
+
+
+  router.post('/user-by-email', async (req, res) => {
+    const { email } = req.body;
+  
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required in request body' });
+    }
+  
+    try {
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      res.json(user);
+    } catch (err) {
+      console.error('Error fetching user:', err);
+      res.status(500).json({ error: 'Server error' });
     }
   });
   

@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const Payment = require("../models/Payment")
 const router = express.Router();
 const User = require("../models/User")
+const Module  = require("../models/ModuleSchema")
 const razorpayInstance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_SECRET,
@@ -69,7 +70,7 @@ router.post('/verify', async (req, res) => {
 
 
             const user = await User.findOne({ email });
-
+            const module = await Module.findOne({_id:moduleId})
             if (user) {
                 user.paidModule.push({
                     moduleId,
@@ -77,7 +78,10 @@ router.post('/verify', async (req, res) => {
                     razorpay_payment_id,
                     razorpay_signature,
                     amount: req.body.amount || 1, // or however you determine amount
-                    date: new Date()
+                    date: new Date(),
+                    moduleTitle:module.title,
+                    moduleImageUri:module.image,
+                    moduleDesc:module.description
                 });
             }
             await user.save();
@@ -93,6 +97,8 @@ router.post('/verify', async (req, res) => {
             res.json({
                 message: "Payement Successfully"
             });
+        }else{
+            res.status(500).json({ message: "Internal Server Error!" });    
         }
     } catch (error) {
         res.status(500).json({ message: "Internal Server Error!" });

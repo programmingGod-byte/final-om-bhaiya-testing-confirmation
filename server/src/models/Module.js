@@ -6,7 +6,7 @@ const ModuleSchema = new mongoose.Schema({
     required: [true, 'Please add a title'],
     unique: true,
     trim: true,
-    maxlength: [100, 'Title cannot be more than 100 characters']
+   
   },
   slug: {
     type: String,

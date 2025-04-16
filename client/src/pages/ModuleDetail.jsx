@@ -42,40 +42,59 @@ const ModuleDetail = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const context = useContext(AuthContext   )
+  const [allUserData,setAllUserData] = useState(null)
   // Fetch module data
+  function isModuleFreePaid(moduleID) {
+    if (!allUserData || !allUserData.paidModule) return false;
+    
+    return allUserData.paidModule.some(module => module.moduleId === moduleID);
+  }
+      
   useEffect(() => {
-    // Simulating API fetch with a delay
-
-    const fetchDocument = async () => {
+    if(!context?.user) return;
+  
+    const handleFetchUser = async () => {
       try {
-        console.log(id)
-        const { data } = await axios.get(`${URLSITE}/api/general/get-module/${id}`);
-        // setDocument(data);
-        setModule(data)
-        // setLoading(false);
-        console.log(data)
+        const response = await axios.post(`${URLSITE}/api/general/user-by-email`, { email:context.user.wholeData.email });
+        
+        console.log(response.data);
+        if(response.status==200){
+          setAllUserData(response.data)
+        }
+        
       } catch (err) {
-        // setError('Error fetching document');
-        // setLoading(false);
-        console.log(err)
+        console.error('Error fetching user:', err);
+        
+        
       }
     };
 
-    fetchDocument();
-      const moduleData = getModuleById(id);
-      
-      
-      setModule({
-        ...moduleData,
-      });
-      
-      setLoading(false);
-      
-      
-  
-  }, [id]);
+      handleFetchUser()
+}, [context.user])
 
-  const handleTabChange = (event, newValue) => {
+useEffect(() => {
+  const fetchModule = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axios.get(`${URLSITE}/api/general/get-module/${id}`);
+      setModule(data);
+      // If API fails, fall back to local data
+    } catch (err) {
+      console.log("API fetch failed, using local data:", err);
+      const moduleData = getModuleById(id);
+      if (moduleData) {
+        setModule(moduleData);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchModule();
+}, [id]);
+
+
+const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
@@ -376,7 +395,7 @@ const ModuleDetail = () => {
           <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
             
               {
-                module?.moduleType!="free"?
+                !isModuleFreePaid(module._id)?
                 <Button 
               variant="contained" 
               color="primary" 
@@ -704,7 +723,7 @@ const ModuleDetail = () => {
                     </Box>
                     
                       {
-                        module.moduleType!='free'?
+                        !isModuleFreePaid(module._id)?
                         <Button 
                           component={Link} 
                           onClick={doPayment}
