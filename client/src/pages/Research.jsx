@@ -544,11 +544,13 @@ const Research = () => {
                         }
                       }}
                     >
+                      
                       <Box sx={{ position: 'relative' }}>
                         <CardMedia
                           component="img"
+                          
                           height="180"
-                          image={getPublisherLogo(paper.source)}
+                          image={paper.image}
                           alt={paper.title}
                           sx={{ 
                             objectFit: 'contain',

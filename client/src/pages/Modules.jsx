@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, 
   Chip, TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem,
@@ -69,7 +69,7 @@ const Modules = () => {
   const [page, setPage] = useState(1);
   const [categories, setCategories] = useState([]);
   const [levels, setLevels] = useState([]);
-  
+  const navigator = useNavigate()
   // Fetch modules data from API
   useEffect(() => {
     const fetchModules = async () => {
@@ -352,6 +352,7 @@ const Modules = () => {
           {displayedModules.map(module => (
             <Grid item xs={12} sm={6} md={4} key={module.id}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.3s, box-shadow 0.3s', '&:hover': { transform: 'translateY(-8px)', boxShadow: 6 } }}>
+             
                 <CardActionArea component={Link} to={`/modules/${module._id}`}>
                   <CardMedia
                     component="img"
@@ -407,8 +408,50 @@ const Modules = () => {
                       </Typography>
                     </Box>
                   </CardContent>
+
                 </CardActionArea>
+
+
+                {
+                    module.moduleType!="free"?
+                    <Button
+                    variant="outlined"
+                    onClick={()=>navigator(`/buy-module/${module._id}`)}
+                    style={{
+                      maxWidth:"100%"
+                    }}
+                    sx={{
+                      color: 'purple',
+                      borderColor: 'purple',
+                      m: 2, // margin (theme spacing = 8px * 2 = 16px)
+                      '&:hover': {
+                        backgroundColor: 'rgba(128, 0, 128, 0.1)', // light purple hover effect
+                        borderColor: 'purple',
+                      },
+                    }}
+                  >
+                    Buy Module
+                  </Button>:
+                   <Button
+                   variant="outlined"
+                   onClick={()=>navigator(`/modules/${module._id}`)}
+                   sx={{
+                     color: 'purple',
+                     borderColor: 'purple',
+                     m: 2, // margin (theme spacing = 8px * 2 = 16px)
+                     '&:hover': {
+                       backgroundColor: 'rgba(128, 0, 128, 0.1)', // light purple hover effect
+                       borderColor: 'purple',
+                     },
+                   }}
+                 >
+                   Read Module
+                 </Button>
+                  } 
               </Card>
+
+
+              
             </Grid>
           ))}
         </Grid>

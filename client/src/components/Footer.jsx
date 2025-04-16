@@ -5,7 +5,7 @@ import {
   List, ListItem, ListItemText, TextField, InputAdornment
 } from '@mui/material';
 import {
-  Facebook, Twitter, LinkedIn, YouTube, Send, Email, Phone, LocationOn
+  Facebook, Instagram,Twitter, LinkedIn, YouTube, Send, Email, Phone, LocationOn
 } from '@mui/icons-material';
 
 const Footer = () => {
@@ -44,17 +44,15 @@ const Footer = () => {
               The comprehensive learning platform for mastering Verilog and digital design.
             </Typography>
             <Box sx={{ mb: 2 }}>
-              <IconButton color="inherit" aria-label="Facebook" component="a" href="#" target="_blank">
-                <Facebook />
-              </IconButton>
-              <IconButton color="inherit" aria-label="Twitter" component="a" href="#" target="_blank">
-                <Twitter />
-              </IconButton>
-              <IconButton color="inherit" aria-label="LinkedIn" component="a" href="#" target="_blank">
+              
+              <IconButton color="inherit" aria-label="LinkedIn" component="a" href="https://www.linkedin.com/company/verigeek/" target="_blank">
                 <LinkedIn />
               </IconButton>
               <IconButton color="inherit" aria-label="YouTube" component="a" href="#" target="_blank">
                 <YouTube />
+              </IconButton>
+              <IconButton color="inherit" aria-label="Instagram" component="a" href="https://www.instagram.com/verigeek?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank">
+                <Instagram />
               </IconButton>
             </Box>
           </Grid>
@@ -109,18 +107,12 @@ const Footer = () => {
               </ListItem>
               <ListItem disableGutters>
                 <ListItemText>
-                  <Link to="/editor" style={{ color: 'white', textDecoration: 'none' }}>
+                  <Link to="/workspace" style={{ color: 'white', textDecoration: 'none' }}>
                     Code Editor
                   </Link>
                 </ListItemText>
               </ListItem>
-              <ListItem disableGutters>
-                <ListItemText>
-                  <Link to="/register" style={{ color: 'white', textDecoration: 'none' }}>
-                    Get Started
-                  </Link>
-                </ListItemText>
-              </ListItem>
+              
             </List>
           </Grid>
 
@@ -158,13 +150,13 @@ const Footer = () => {
                   </Link>
                 </ListItemText>
               </ListItem>
-              <ListItem disableGutters>
+              {/* <ListItem disableGutters>
                 <ListItemText>
                   <Link to="/faq" style={{ color: 'white', textDecoration: 'none' }}>
                     FAQ
                   </Link>
                 </ListItemText>
-              </ListItem>
+              </ListItem> */}
             </List>
           </Grid>
 
@@ -220,7 +212,7 @@ const Footer = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <Email fontSize="small" sx={{ mr: 1 }} />
                 <Typography variant="body2">
-                  omdaga6@gmail.com
+                  verigeektech@gmail.com
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -253,9 +245,7 @@ const Footer = () => {
             <Button color="inherit" size="small" component={Link} to="/terms">
               Terms
             </Button>
-            <Button color="inherit" size="small" component={Link} to="/cookies">
-              Cookies
-            </Button>
+            
           </Box>
         </Box>
       </Container>

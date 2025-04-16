@@ -45,7 +45,38 @@ const UserSchema = new mongoose.Schema({
     maxlength: [500, 'Bio cannot be more than 500 characters']
   },
   favoriteTopics: [String],
-  badges: [String]
+  badges: [String],
+  paidModule: {
+    type: [
+      {
+        moduleId: {
+          type: String,
+          required: true
+        },
+        razorpay_order_id: {
+          type: String,
+          required: true
+        },
+        razorpay_payment_id: {
+          type: String,
+          required: true
+        },
+        razorpay_signature: {
+          type: String,
+          required: true
+        },
+        amount: {
+          type: Number,
+          required: true
+        },
+        date: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ],
+    default: []
+  }
 }, {
   timestamps: true
 });

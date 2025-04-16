@@ -21,11 +21,11 @@ const ResourceSchema = new mongoose.Schema({
 const OverviewCodeSampleSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    
   },
   code: {
     type: String,
-    required: true,
+    
   },
 });
 
@@ -33,35 +33,35 @@ const OverviewCodeSampleSchema = new mongoose.Schema({
 const CodeExampleSchema = new mongoose.Schema({
   id: {
     type: String,
-    required: true,
+    
   },
   title: {
     type: String,
-    required: true,
+    
   },
   description: {
     type: String,
-    required: true,
+    
   },
   difficulty: {
     type: String,
-    required: true,
+    
   },
   type: {
     type: String,
-    required: true,
+    
   },
   completed: {
     type: Boolean,
-    default: false,
+    
   },
   code: {
     type: String,
-    required: true,
+    
   },
   testbench:{
     type:String,
-    require:true
+    
   }
 });
 

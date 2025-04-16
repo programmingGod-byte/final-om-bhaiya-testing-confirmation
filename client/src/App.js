@@ -35,6 +35,10 @@ import BlogWriter from './pages/BlogWriter';
 import UserProfile from './pages/ProfilePage';
 import PricingPage from './pages/PricingPage';
 import AuthContext from './context/AuthContext';
+import BuyModule from './components/BuyModule';
+import About from "./pages/About"
+import Privacy from "./pages/Privacy"
+import Terms from "./pages/Terms"
 // Switch manually for now
 const currentTheme = darkTheme;
 
@@ -95,6 +99,10 @@ function App() {
     {
       path: "/modules/:id",
       element: <ModuleDetail />,
+    },
+    {
+      path: "/buy-module/:id",
+      element: <BuyModule />,
     },
     {
       path: "/modules/:moduleId/chapters/:chapterId",
@@ -163,6 +171,18 @@ function App() {
     {
       path:"/pricing",
       element:<PricingPage/>
+    },
+    {
+      path:"/about",
+      element:<About/>
+    },
+    {
+      path:"/privacy",
+      element:<Privacy/>
+    },
+    {
+      path:"/terms",
+      element:<Terms/>
     },
     {
       path: "*",

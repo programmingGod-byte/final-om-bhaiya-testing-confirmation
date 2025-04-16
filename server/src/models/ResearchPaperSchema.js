@@ -25,7 +25,7 @@ const paperSchema = new Schema({
   },
   paperType: {
     type: String,
-    enum: ['IEEE', 'ACM', 'SPRINGER', 'arXiv', 'Elsevier'], // Valid paper types
+    // enum: ['IEEE', 'ACM', 'SPRINGER', 'arXiv', 'Elsevier'], // Valid paper types
     required: true,
   },
   whatItCovers: {
@@ -34,7 +34,7 @@ const paperSchema = new Schema({
   },
   source: {
     type: String,
-    enum: ['IEEE', 'ACM', 'SPRINGER', 'arXiv', 'Elsevier'], // Valid sources
+    // enum: ['IEEE', 'ACM', 'SPRINGER', 'arXiv', 'Elsevier'], // Valid sources
     required: true,
   },
   submissionDate: {

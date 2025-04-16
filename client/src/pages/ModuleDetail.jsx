@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from "axios"
 import { 
@@ -6,6 +6,7 @@ import {
   Tabs, Tab, List, ListItem, ListItemIcon, ListItemText, Divider, 
   Chip, Rating, Avatar, LinearProgress, Paper, Accordion, AccordionSummary, AccordionDetails, Snackbar
 } from '@mui/material';
+import toast, { Toaster } from "react-hot-toast";
 import { 
   PlayArrow, Assignment, MenuBook, Check, PlayCircleOutline, 
   BarChart, People, Schedule, AutoStories, ArrowBack, BookmarkAdd, ExpandMore, Code, 
@@ -16,7 +17,7 @@ import {
 import { getModuleById } from '../data/modules';
 import { getModuleProgress, initializeProgressData } from '../utils/progressTracker';
 import URLSITE from '../constant';
-
+import AuthContext from '../context/AuthContext';
 // Tab panel component for the module details
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -40,7 +41,7 @@ const ModuleDetail = () => {
   const [progress, setProgress] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
+  const context = useContext(AuthContext   )
   // Fetch module data
   useEffect(() => {
     // Simulating API fetch with a delay
@@ -97,6 +98,75 @@ const ModuleDetail = () => {
         </Button>
     </Box>
     );
+  }
+
+
+
+  const doPayment = async()=>{
+    
+      try {
+          const res = await fetch(`${URLSITE}/api/payment/order`, {
+              method: "POST",
+              headers: {
+                  "content-type": "application/json"
+              },
+              body: JSON.stringify({
+                  amount:1
+              })
+          });
+
+          const data = await res.json();
+          console.log(data);
+          console.log("handlePayment Verify Called")
+          const options = {
+            key:"rzp_live_03MrnVzpBcaEI3",
+            amount: data.data.amount,
+            currency: data.data.currency,
+            name: "VeriGeek",
+            description: "Payment",
+            order_id: data.data.id,
+            handler: async (response) => {
+                console.log("response", response)
+                try {
+                    const res = await fetch(`${URLSITE}/api/payment/verify`, {
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            email:context.user.email,
+                            moduleId:id,
+                            amount:1
+                        })
+                    })
+  
+                    const verifyData = await res.json();
+  
+                    if (verifyData.message) {
+                        toast.success(verifyData.message)
+                    }
+                } catch (error) {
+                  toast.error(error)
+                    console.log(error);
+                }
+            },
+            theme: {
+                color: "#5f63b8"
+            }
+        };
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open();
+      } catch (error) {
+          console.log(error);
+      }
+  
+  
+
+
+
   }
 
   // Ensure required arrays exist to prevent "length of undefined" errors
@@ -304,19 +374,36 @@ const ModuleDetail = () => {
         </Grid>
         <Grid item xs={12} md={4}>
           <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
-            <Button 
+            
+              {
+                module?.moduleType!="free"?
+                <Button 
               variant="contained" 
               color="primary" 
               fullWidth 
+              onClick={doPayment}
+                        
               startIcon={<PlayArrow />}
               component={Link}
-              to={`/modules/${id}/chapters/${continueChapterId}`}
+            
               sx={{ height: '100%' }}
             >
-              {continueButtonText}
+              {"Buy Module"}
             </Button>
-            
-              
+            :<Button 
+            variant="contained" 
+            color="primary" 
+            fullWidth 
+            startIcon={<PlayArrow />}
+            component={Link}
+            to={`/modules/${id}/chapters/${module.chapters[0].chapterId}`}
+            sx={{ height: '100%' }}
+          >
+            {"Start Module"}
+          </Button>
+          
+
+              }
             
           </Box>
         </Grid>
@@ -616,16 +703,32 @@ const ModuleDetail = () => {
                       )}
                     </Box>
                     
+                      {
+                        module.moduleType!='free'?
+                        <Button 
+                          component={Link} 
+                          onClick={doPayment}
+                        
+                          variant="outlined"
+                          color="primary"
+                          size="small"
+                          sx={{ ml: 2, alignSelf: 'center', flexShrink: 0 }}
+                        >
+                          {'Buy Module'}
+                          </Button>:
+
                     <Button 
-                      component={Link} 
-                      to={`/modules/${id}/chapters/${chapter.chapterId}`}
-                      variant="outlined"
-                      color="primary"
-                      size="small"
-                      sx={{ ml: 2, alignSelf: 'center', flexShrink: 0 }}
-                    >
-                      {'Start'}
+                    component={Link} 
+                    to={`/modules/${id}/chapters/${chapter.chapterId}`}
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    sx={{ ml: 2, alignSelf: 'center', flexShrink: 0 }}
+                  >
+                    {'Start'}
                     </Button>
+                      }
+                    
                   </Box>
                 </Box>
               ))}

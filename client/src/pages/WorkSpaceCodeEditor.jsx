@@ -6,7 +6,6 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import URLSITE from "../constant";
 
-
 import { Activity } from 'lucide-react';
 // or
 import { BarChart } from 'lucide-react';
@@ -28,8 +27,8 @@ function WorkSpaceCodeEditor() {
     const [newFileName, setNewFileName] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const [splitPosition, setSplitPosition] = useState(50); // Default 50% split
-    // const [isResizing, setIsResizing] = useState(false);
     const [isFileExplorerCollapsed, setIsFileExplorerCollapsed] = useState(false);
+    const [iframeKey, setIframeKey] = useState(0); // Add this to force iframe refresh
     
     const languages = ['verilog'];
     const resizeRef = useRef(null);
@@ -131,9 +130,13 @@ function WorkSpaceCodeEditor() {
                 verilogCode: codeContent,
                 testbenchCode: testbenchContent
             });
-            console.log(res.data)
+            
             if (res.data.waveform) {
+                // Set the waveform URL and force the iframe to refresh by updating its key
                 setWaveformBlobURL(res.data.waveform);
+                setIframeKey(prevKey => prevKey + 1);
+            } else {
+                setWaveformBlobURL(null);
             }
             
             setOutput(res.data.output || 'Simulation complete. No output.');
@@ -149,6 +152,8 @@ function WorkSpaceCodeEditor() {
             } else {
                 setOutput(err.message);
             }
+            // Clear waveform if there's an error
+            setWaveformBlobURL(null);
         } finally {
             setIsProcessing(false);
         }
@@ -339,9 +344,6 @@ function WorkSpaceCodeEditor() {
                         />
                     </div>
 
-                    {/* Resize Handle */}
-                    
-
                     {/* Output Panel */}
                     <div className="h-full bg-gray-800 text-white flex flex-col" style={{ width: `${100 - splitPosition}%` }}>
                         {/* Tabs */}
@@ -403,9 +405,12 @@ function WorkSpaceCodeEditor() {
                                 <div className="h-full bg-gray-950 rounded-md border border-gray-800 overflow-auto">
                                     {waveFormBlobUrl ? (
                                         <iframe
+                                            key={iframeKey} // This forces a refresh of the iframe when the content changes
                                             title="Visual Output"
-                                            src={`https://app.surfer-project.org/?load_url=${waveFormBlobUrl}`}
+                                            src={`https://app.surfer-project.org/?load_url=${encodeURIComponent(waveFormBlobUrl)}`}
                                             className="w-full h-full border-none"
+                                            sandbox="allow-scripts allow-same-origin"
+                                            onError={() => console.error("Error loading iframe")}
                                         />
                                     ) : (
                                         <div className="flex flex-col items-center justify-center h-full text-gray-400">
