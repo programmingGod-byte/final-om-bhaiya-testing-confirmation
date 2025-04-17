@@ -435,26 +435,7 @@ const Modules = () => {
                   </CardContent>
                 </CardActionArea>
 
-                {module.moduleType !== "free" ? (
-                  <Button
-                    variant="outlined"
-                    onClick={() => navigator(`/buy-module/${module._id}`)}
-                    style={{
-                      maxWidth: "100%"
-                    }}
-                    sx={{
-                      color: 'purple',
-                      borderColor: 'purple',
-                      m: 2,
-                      '&:hover': {
-                        backgroundColor: 'rgba(128, 0, 128, 0.1)',
-                        borderColor: 'purple',
-                      },
-                    }}
-                  >
-                    Buy Module
-                  </Button>
-                ) : (
+                
                   <Button
                     variant="outlined"
                     onClick={() => navigator(`/modules/${module._id}`)}
@@ -470,7 +451,7 @@ const Modules = () => {
                   >
                     Read Module
                   </Button>
-                )}
+                
               </Card>
             </Grid>
           ))}
