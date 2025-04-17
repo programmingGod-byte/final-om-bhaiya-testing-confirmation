@@ -1,4 +1,4 @@
-const URLSITE = "http://localhost:5000";
+const URLSITE = "https://verigeek.xyz";
 
 export default URLSITE;
 
