@@ -434,23 +434,8 @@ const Header = () => {
       
               </Box>
             )}
-          <button
-      onClick={()=>context.colorMode=="dark" ? context.setColorMode("light"):context.setColorMode("dark")}
-              style={{
-                marginLeft:"10px"
-              }}
-    >
-      
-      {
-        context.colorMode=="dark"?
-        <DarkModeIcon className='text-white text-sm' />
-        :<LightModeIcon className='text-yellow-500 text-sm' />
-      }
       
       
-      
-    </button>
-
             
           </Box>
         </Toolbar>

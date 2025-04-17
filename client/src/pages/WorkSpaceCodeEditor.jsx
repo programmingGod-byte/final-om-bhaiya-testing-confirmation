@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, FilePlus, Settings, Moon, Sun, CornerUpRight, Save, Download, ChevronRight, ChevronLeft, Copy, Trash2, RefreshCw, Terminal, Waveform, HelpCircle } from 'lucide-react';
+import { Play, FilePlus, Settings, Moon, Sun, CornerUpRight, Save, Download, ChevronRight, ChevronLeft, Copy, Trash2, RefreshCw, Terminal, Waveform, HelpCircle, Maximize, Minimize } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -29,6 +29,7 @@ function WorkSpaceCodeEditor() {
     const [splitPosition, setSplitPosition] = useState(50); // Default 50% split
     const [isFileExplorerCollapsed, setIsFileExplorerCollapsed] = useState(false);
     const [iframeKey, setIframeKey] = useState(0); // Add this to force iframe refresh
+    const [isOutputExpanded, setIsOutputExpanded] = useState(false); // New state for expanded output
     
     const languages = ['verilog'];
     const resizeRef = useRef(null);
@@ -237,6 +238,11 @@ function WorkSpaceCodeEditor() {
         });
     };
 
+    // Toggle output expansion
+    const toggleOutputExpansion = () => {
+        setIsOutputExpanded(!isOutputExpanded);
+    };
+
     return (
         <div className="min-h-screen bg-gray-900 flex flex-col">
             {/* Top Bar */}
@@ -287,80 +293,97 @@ function WorkSpaceCodeEditor() {
             {/* Main Content */}
             <div className="flex-1 flex">
                 {/* File Explorer - Collapsible */}
-                <div className={`${isFileExplorerCollapsed ? 'w-10' : 'w-56'} bg-gray-800 border-r border-gray-700 text-white overflow-y-auto transition-all duration-300 flex flex-col`}>
-                    <div className="p-3 flex items-center justify-between border-b border-gray-700">
-                        {!isFileExplorerCollapsed && <span className="font-semibold">Files</span>}
-                        <div className="flex items-center">
-                            {!isFileExplorerCollapsed && (
-                                <FilePlus 
-                                    size={18} 
-                                    className="text-indigo-400 cursor-pointer hover:text-indigo-300 mr-3" 
-                                    onClick={createNewFile}
-                                    title="Create New File" 
-                                />
-                            )}
-                            <button
-                                onClick={() => setIsFileExplorerCollapsed(!isFileExplorerCollapsed)}
-                                className="text-gray-400 hover:text-white"
-                            >
-                                {isFileExplorerCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-                            </button>
+                {!isOutputExpanded && (
+                    <div className={`${isFileExplorerCollapsed ? 'w-10' : 'w-56'} bg-gray-800 border-r border-gray-700 text-white overflow-y-auto transition-all duration-300 flex flex-col`}>
+                        <div className="p-3 flex items-center justify-between border-b border-gray-700">
+                            {!isFileExplorerCollapsed && <span className="font-semibold">Files</span>}
+                            <div className="flex items-center">
+                                {!isFileExplorerCollapsed && (
+                                    <FilePlus 
+                                        size={18} 
+                                        className="text-indigo-400 cursor-pointer hover:text-indigo-300 mr-3" 
+                                        onClick={createNewFile}
+                                        title="Create New File" 
+                                    />
+                                )}
+                                <button
+                                    onClick={() => setIsFileExplorerCollapsed(!isFileExplorerCollapsed)}
+                                    className="text-gray-400 hover:text-white"
+                                >
+                                    {isFileExplorerCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+                                </button>
+                            </div>
                         </div>
+                        
+                        {!isFileExplorerCollapsed && (
+                            <div className="py-2 px-2 flex-1 overflow-y-auto">
+                                {files.length === 0 ? (
+                                    <div className="text-gray-500 text-sm p-3 text-center">
+                                        No files yet. Create one to get started.
+                                    </div>
+                                ) : (
+                                    files.map(file => renderFile(file))
+                                )}
+                            </div>
+                        )}
                     </div>
-                    
-                    {!isFileExplorerCollapsed && (
-                        <div className="py-2 px-2 flex-1 overflow-y-auto">
-                            {files.length === 0 ? (
-                                <div className="text-gray-500 text-sm p-3 text-center">
-                                    No files yet. Create one to get started.
-                                </div>
-                            ) : (
-                                files.map(file => renderFile(file))
-                            )}
-                        </div>
-                    )}
-                </div>
+                )}
 
                 {/* Resizable Editor and Output */}
                 <div className="flex-1 flex relative">
-                    {/* Code Editor */}
-                    <div className="h-full" style={{ width: `${splitPosition}%` }}>
-                        <Editor
-                            height="calc(100vh - 56px)"
-                            defaultLanguage="verilog"
-                            language={language}
-                            theme={isDarkTheme ? "vs-dark" : "light"}
-                            value={code}
-                            onChange={handleEditorChange}
-                            beforeMount={handleEditorWillMount}
-                            options={{
-                                minimap: { enabled: true },
-                                fontSize: 14,
-                                lineNumbers: 'on',
-                                automaticLayout: true,
-                                scrollBeyondLastLine: false,
-                                padding: { top: 10 }
-                            }}
-                        />
-                    </div>
+                    {/* Code Editor - Hidden when output is expanded */}
+                    {!isOutputExpanded && (
+                        <div className="h-full" style={{ width: `${splitPosition}%` }}>
+                            <Editor
+                                height="calc(100vh - 56px)"
+                                defaultLanguage="verilog"
+                                language={language}
+                                theme={isDarkTheme ? "vs-dark" : "light"}
+                                value={code}
+                                onChange={handleEditorChange}
+                                beforeMount={handleEditorWillMount}
+                                options={{
+                                    minimap: { enabled: true },
+                                    fontSize: 14,
+                                    lineNumbers: 'on',
+                                    automaticLayout: true,
+                                    scrollBeyondLastLine: false,
+                                    padding: { top: 10 }
+                                }}
+                            />
+                        </div>
+                    )}
 
-                    {/* Output Panel */}
-                    <div className="h-full bg-gray-800 text-white flex flex-col" style={{ width: `${100 - splitPosition}%` }}>
-                        {/* Tabs */}
-                        <div className="h-10 flex border-b border-gray-700 bg-gray-900">
+                    {/* Output Panel - Full width when expanded */}
+                    <div className="h-full bg-gray-800 text-white flex flex-col" 
+                        style={{ width: isOutputExpanded ? '100%' : `${100 - splitPosition}%` }}>
+                        {/* Tabs with Expand/Collapse Button */}
+                        <div className="h-10 flex border-b border-gray-700 bg-gray-900 items-center justify-between">
+                            <div className="flex h-full">
+                                <button
+                                    onClick={() => setActiveTab("console")}
+                                    className={`px-4 h-full flex items-center text-sm gap-1.5 ${activeTab === "console" ? 'bg-gray-800 border-t-2 border-indigo-500 font-medium' : 'hover:bg-gray-800 text-gray-400'}`}
+                                >
+                                    <Terminal size={14} />
+                                    Console Output
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("visual")}
+                                    className={`px-4 h-full flex items-center text-sm gap-1.5 ${activeTab === "visual" ? 'bg-gray-800 border-t-2 border-indigo-500 font-medium' : 'hover:bg-gray-800 text-gray-400'}`}
+                                >
+                                    <Activity size={14} />
+                                    Waveform View
+                                </button>
+                            </div>
+                            
+                            {/* Expand/Collapse Button */}
                             <button
-                                onClick={() => setActiveTab("console")}
-                                className={`px-4 h-full flex items-center text-sm gap-1.5 ${activeTab === "console" ? 'bg-gray-800 border-t-2 border-indigo-500 font-medium' : 'hover:bg-gray-800 text-gray-400'}`}
+                                onClick={toggleOutputExpansion}
+                                className="px-4 h-full flex items-center text-sm gap-1.5 hover:bg-gray-800 text-gray-400 hover:text-white"
+                                title={isOutputExpanded ? "Collapse output" : "Expand output"}
                             >
-                                <Terminal size={14} />
-                                Console Output
-                            </button>
-                            <button
-                                onClick={() => setActiveTab("visual")}
-                                className={`px-4 h-full flex items-center text-sm gap-1.5 ${activeTab === "visual" ? 'bg-gray-800 border-t-2 border-indigo-500 font-medium' : 'hover:bg-gray-800 text-gray-400'}`}
-                            >
-                                <Activity size={14} />
-                                Waveform View
+                                {isOutputExpanded ? <Minimize size={16} /> : <Maximize size={16} />}
+                                <span className="hidden sm:inline">{isOutputExpanded ? "Collapse" : "Expand"}</span>
                             </button>
                         </div>
 
@@ -396,7 +419,7 @@ function WorkSpaceCodeEditor() {
                         </div>
 
                         {/* Output display */}
-                        <div className="flex-1 p-3 overflow-auto bg-gray-900">
+                        <div className={`flex-1 p-3 overflow-auto bg-gray-900 ${isOutputExpanded ? 'h-full' : ''}`}>
                             {activeTab === "console" ? (
                                 <pre className="font-mono bg-gray-950 text-white p-3 rounded-md whitespace-pre-wrap h-full overflow-auto border border-gray-800">
                                     {output}

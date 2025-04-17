@@ -30,7 +30,6 @@ import {
   Code,
 } from '@mui/icons-material';
 import {
-  
   Paper,
   Button,
   List,
@@ -70,6 +69,15 @@ const Modules = () => {
   const [categories, setCategories] = useState([]);
   const [levels, setLevels] = useState([]);
   const navigator = useNavigate()
+  
+  // Function to truncate text to specific word count
+  const truncateText = (text, wordCount) => {
+    if (!text) return '';
+    const words = text.split(' ');
+    if (words.length <= wordCount) return text;
+    return words.slice(0, wordCount).join(' ') + '...';
+  };
+  
   // Fetch modules data from API
   useEffect(() => {
     const fetchModules = async () => {
@@ -272,8 +280,6 @@ const Modules = () => {
 
     <Box className="container page-container">
 
-
-      
       {/* Search and Filters */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={6}>
@@ -350,9 +356,8 @@ const Modules = () => {
       {displayedModules.length > 0 ? (
         <Grid container spacing={4} sx={{ mb: 4 }}>
           {displayedModules.map(module => (
-            <Grid item xs={12} sm={6} md={4} key={module.id}>
+            <Grid item xs={12} sm={6} md={4} key={module.id || module._id}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.3s, box-shadow 0.3s', '&:hover': { transform: 'translateY(-8px)', boxShadow: 6 } }}>
-             
                 <CardActionArea component={Link} to={`/modules/${module._id}`}>
                   <CardMedia
                     component="img"
@@ -361,9 +366,25 @@ const Modules = () => {
                     alt={module.title}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" component="h3" gutterBottom noWrap>
+                    {/* Module Type Badge (FREE/PAID) */}
+                    <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
+                      <Chip 
+                        label={module.moduleType === "free" ? "FREE" : "PAID"} 
+                        size="small" 
+                        sx={{ 
+                          backgroundColor: module.moduleType === "free" ? '#4caf50' : '#f44336',
+                          color: 'white',
+                          fontWeight: 700,
+                          fontSize: '0.75rem',
+                          px: 1
+                        }} 
+                      />
+                    </Box>
+                    
+                    <Typography variant="h6" component="h3" gutterBottom>
                       {module.title}
                     </Typography>
+                    
                     <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
                       <Chip 
                         label={module.level} 
@@ -378,11 +399,13 @@ const Modules = () => {
                         }} 
                       />
                     </Box>
+                    
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {module.description}
+                      {truncateText(module.description, 18)}
                     </Typography>
+                    
                     <Box sx={{ mt: 1, mb: 2 }}>
-                      {module.skills && module.skills.map((topic, index) => (
+                      {module.skills && module.skills.slice(0, 3).map((topic, index) => (
                         <Chip
                           key={index}
                           label={topic}
@@ -390,15 +413,17 @@ const Modules = () => {
                           sx={{ mr: 0.5, mb: 0.5, backgroundColor: 'rgba(106, 13, 173, 0.08)', fontSize: '0.7rem' }}
                         />
                       ))}
-                      {module.skills &&  (
+                      {module.skills && module.skills.length > 3 && (
                         <Chip
-                          label={`+${module.skills.length} more`}
+                          label={`+${module.skills.length - 3} more`}
                           size="small"
                           sx={{ mb: 0.5, backgroundColor: 'rgba(106, 13, 173, 0.04)', fontSize: '0.7rem' }}
                         />
                       )}
                     </Box>
+                    
                     <Divider sx={{ my: 1 }} />
+                    
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                       <Typography variant="body2" color="text.secondary">
                         ⭐ {module.rating || '4.8'} ({module.students || '0'})
@@ -408,50 +433,45 @@ const Modules = () => {
                       </Typography>
                     </Box>
                   </CardContent>
-
                 </CardActionArea>
 
-
-                {
-                    module.moduleType!="free"?
-                    <Button
+                {module.moduleType !== "free" ? (
+                  <Button
                     variant="outlined"
-                    onClick={()=>navigator(`/buy-module/${module._id}`)}
+                    onClick={() => navigator(`/buy-module/${module._id}`)}
                     style={{
-                      maxWidth:"100%"
+                      maxWidth: "100%"
                     }}
                     sx={{
                       color: 'purple',
                       borderColor: 'purple',
-                      m: 2, // margin (theme spacing = 8px * 2 = 16px)
+                      m: 2,
                       '&:hover': {
-                        backgroundColor: 'rgba(128, 0, 128, 0.1)', // light purple hover effect
+                        backgroundColor: 'rgba(128, 0, 128, 0.1)',
                         borderColor: 'purple',
                       },
                     }}
                   >
                     Buy Module
-                  </Button>:
-                   <Button
-                   variant="outlined"
-                   onClick={()=>navigator(`/modules/${module._id}`)}
-                   sx={{
-                     color: 'purple',
-                     borderColor: 'purple',
-                     m: 2, // margin (theme spacing = 8px * 2 = 16px)
-                     '&:hover': {
-                       backgroundColor: 'rgba(128, 0, 128, 0.1)', // light purple hover effect
-                       borderColor: 'purple',
-                     },
-                   }}
-                 >
-                   Read Module
-                 </Button>
-                  } 
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outlined"
+                    onClick={() => navigator(`/modules/${module._id}`)}
+                    sx={{
+                      color: 'purple',
+                      borderColor: 'purple',
+                      m: 2,
+                      '&:hover': {
+                        backgroundColor: 'rgba(128, 0, 128, 0.1)',
+                        borderColor: 'purple',
+                      },
+                    }}
+                  >
+                    Read Module
+                  </Button>
+                )}
               </Card>
-
-
-              
             </Grid>
           ))}
         </Grid>

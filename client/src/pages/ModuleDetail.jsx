@@ -395,7 +395,21 @@ const handleTabChange = (event, newValue) => {
           <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
             
               {
-                !isModuleFreePaid(module._id)?
+              
+              module.moduleType=="free"?
+              <Button 
+            variant="contained" 
+            color="primary" 
+            fullWidth 
+            startIcon={<PlayArrow />}
+            component={Link}
+            to={`/modules/${id}/chapters/${module.chapters[0].chapterId}`}
+            sx={{ height: '100%' }}
+          >
+            {"Start Module"}
+          </Button>
+          :
+              !isModuleFreePaid(module._id)?
                 <Button 
               variant="contained" 
               color="primary" 

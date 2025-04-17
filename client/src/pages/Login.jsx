@@ -252,13 +252,6 @@ function GoogleLoginButton() {
             </form>
           </Paper>
           
-          <Box sx={{ textAlign: 'center', mt: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              For demo purposes, use: <br />
-              Email: user@example.com <br />
-              Password: password
-            </Typography>
-          </Box>
         </Grid>
       </Grid>
       

@@ -56,9 +56,13 @@ const ChapterView = () => {
           
           console.log(response.data);
           if(response.status==200){
+            if(!module.moduleType=="free"){
+                
             if(!response.data.paidModule.some(module => module.moduleId === moduleId)){
               navigate(`/modules/${moduleId}`)
+            }              
             }
+
           }
           
         } catch (err) {
