@@ -1,8 +1,13 @@
 import { motion } from 'framer-motion';
 import { ArrowUpRight, ShieldCheck, Lock, Database, Cookie } from 'lucide-react';
+import { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
 
 const Privacy = () => {
+  const context = useContext(AuthContext)
+    context.ScrollToTop()
+    
   const sections = [
     {
       title: "Information Collection",

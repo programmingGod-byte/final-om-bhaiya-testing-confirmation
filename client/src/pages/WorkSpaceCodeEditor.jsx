@@ -427,21 +427,32 @@ function WorkSpaceCodeEditor() {
                             ) : (
                                 <div className="h-full bg-gray-950 rounded-md border border-gray-800 overflow-auto">
                                     {waveFormBlobUrl ? (
-                                        <iframe
-                                            key={iframeKey} // This forces a refresh of the iframe when the content changes
-                                            title="Visual Output"
-                                            src={`https://app.surfer-project.org/?load_url=${encodeURIComponent(waveFormBlobUrl)}`}
-                                            className="w-full h-full border-none"
-                                            sandbox="allow-scripts allow-same-origin"
-                                            onError={() => console.error("Error loading iframe")}
-                                        />
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                                            <Activity size={48} className="mb-3 text-gray-600" />
-                                            <p className="mb-1">No waveform data available</p>
-                                            <p className="text-sm text-gray-500">Run your code with a testbench to generate a waveform</p>
-                                        </div>
-                                    )}
+    <iframe
+        key={iframeKey} // This forces a refresh of the iframe when the content changes
+        title="Visual Output"
+        src={`https://app.surfer-project.org/?load_url=${encodeURIComponent(waveFormBlobUrl)}`}
+        className="w-full h-full border-none"
+        sandbox="allow-scripts allow-same-origin"
+        onError={() => console.error("Error loading iframe")}
+    />
+) : (
+    <div className="flex flex-col items-center justify-center h-full text-gray-400">
+        <Activity size={48} className="mb-3 text-gray-600" />
+        <p className="mb-1">No waveform data available</p>
+        <p className="text-sm text-gray-500 mb-2">Run your code with a testbench to generate a waveform</p>
+        <div className="bg-gray-800 p-4 rounded-md max-w-lg text-xs text-gray-300 border border-gray-700">
+            <p className="font-medium mb-1 text-indigo-400">Tip: To create a waveform, add these lines to your testbench:</p>
+            <pre className="bg-gray-900 p-2 rounded mb-2 overflow-x-auto">
+                {`initial begin
+  $dumpfile("output.vcd");
+  $dumpvars(0, test_module_name);
+  // ... rest of your testbench
+end`}
+            </pre>
+            <p>Make sure to replace "test_module_name" with your testbench's main module instance name.</p>
+        </div>
+    </div>
+)}
                                 </div>
                             )}
                         </div>

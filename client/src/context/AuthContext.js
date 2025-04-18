@@ -3,6 +3,19 @@ import axios from "axios"
 import { useNavigate } from 'react-router-dom';
 import URLSITE from '../constant';
 export const AuthContext = createContext();
+// ScrollToTop.tsx
+import { useLocation } from 'react-router-dom';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pathname]);
+
+  return null;
+};
+
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -11,6 +24,7 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [colorMode,setColorMode] = useState("light")
   const [currentModule,setCurrentModule] = useState([])
+  const [currentChapterIndex,setCurrentChapterIndex] = useState(0)
   const navigate = useNavigate()
   useEffect(() => {
     // Check if user is stored in localStorage
@@ -56,9 +70,13 @@ export const AuthProvider = ({ children }) => {
       error,
       colorMode,
       setColorMode,
+      currentChapterIndex,
+      setCurrentChapterIndex,
+      currentModule,
       setCurrentModule,
-      currentModule
+      ScrollToTop
     }}>
+      
       {children}
     </AuthContext.Provider>
   );

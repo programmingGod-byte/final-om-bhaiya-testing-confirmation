@@ -16,6 +16,9 @@ const generalRoute = require('./src/routes/generalRoute')
 const paymentRoute = require("./src/routes/payment")
 const app = express();
 
+app.use(express.json({ limit: '50mb' })); // for JSON payloads
+app.use(express.urlencoded({ extended: true, limit: '50mb' })); // for form data
+
 // Middleware
 app.use(cors({
   origin:"*"

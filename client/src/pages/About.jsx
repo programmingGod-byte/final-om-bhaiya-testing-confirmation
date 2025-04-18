@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Container, Typography, Box, Grid, Paper, Avatar,
   Divider, Button, Chip, Stack, Fade, Grow, Zoom,
@@ -11,9 +11,12 @@ import {
 } from '@mui/icons-material';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import AuthContext from '../context/AuthContext';
 
 // Animated component wrapper
 const AnimatedBox = ({ children, delay = 0 }) => {
+  const context = useContext(AuthContext)
+  context.ScrollToTop()
   const controls = useAnimation();
   const [ref, inView] = useInView({
     threshold: 0.1,

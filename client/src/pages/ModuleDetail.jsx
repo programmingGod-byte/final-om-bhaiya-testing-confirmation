@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from "axios"
+import hljs from 'highlight.js';
+import 'highlight.js/styles/googlecode.css';
+
+// Import Verilog highlighting - make sure you have this installed
+import 'highlight.js/lib/languages/verilog';
+
 import { 
   Box, Typography, Button, Grid, Card, CardContent, Breadcrumbs, 
   Tabs, Tab, List, ListItem, ListItemIcon, ListItemText, Divider, 
@@ -18,6 +24,11 @@ import { getModuleById } from '../data/modules';
 import { getModuleProgress, initializeProgressData } from '../utils/progressTracker';
 import URLSITE from '../constant';
 import AuthContext from '../context/AuthContext';
+
+
+hljs.registerLanguage('verilog', require('highlight.js/lib/languages/verilog'));
+
+
 // Tab panel component for the module details
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -50,10 +61,20 @@ const ModuleDetail = () => {
     if(module.moduleType=="free") return true;
     return allUserData.paidModule.some(module => module.moduleId === moduleID);
   }
+
+  
       
+
+    useEffect(() => {
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightBlock(block);
+      });
+    });
+
+
   useEffect(() => {
     if(!context?.user) return;
-  
+    context.setCurrentChapterIndex(0)
     const handleFetchUser = async () => {
       try {
         const response = await axios.post(`${URLSITE}/api/general/user-by-email`, { email:context.user.wholeData.email });
@@ -80,6 +101,7 @@ useEffect(() => {
     try {
       const { data } = await axios.get(`${URLSITE}/api/general/get-module/${id}`);
       console.log(data)
+      context.setCurrentModule(data)
       setModule(data);
       // If API fails, fall back to local data
     } catch (err) {
@@ -194,8 +216,8 @@ const handleTabChange = (event, newValue) => {
   // Ensure required arrays exist to prevent "length of undefined" errors
   const syllabus = module.learnItems || [];
   const exercises = module.codeExamples || [];
-  const practicalExamples = module.codeExamples || [];
-  const codeExamples = module.overviewCodeSamples || [];
+  const practicalExamples = module.overviewCodeSamples || [];
+  const codeExamples = module.codeExamples || [];
   const resources = module.resources || [];
   const relatedModules = [];
 
@@ -861,8 +883,6 @@ const handleTabChange = (event, newValue) => {
                         <AccordionDetails>
                           <Box 
                             sx={{ 
-                              bgcolor: '#272822', 
-                              color: '#f8f8f2', 
                               p: 2, 
                               borderRadius: 1,
                               fontFamily: 'monospace',

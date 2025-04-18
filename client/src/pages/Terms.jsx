@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Container, Typography, Box, Paper, Divider, Button,
   Accordion, AccordionSummary, AccordionDetails
@@ -9,8 +9,12 @@ import {
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
 
 const Terms = () => {
+  const context = useContext(AuthContext)
+    context.ScrollToTop()
+    
   const navigate = useNavigate();
 
   const sections = [

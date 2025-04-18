@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, 
@@ -57,6 +57,7 @@ import {
   Fade,
   Zoom,
 } from '@mui/material';
+import AuthContext from '../context/AuthContext';
 
 const Modules = () => {
   // State for data, filters, and pagination
@@ -70,8 +71,8 @@ const Modules = () => {
   const [categories, setCategories] = useState([]);
   const [levels, setLevels] = useState([]);
   const navigator = useNavigate()
-  
-  // Function to truncate text to specific word count
+  const context = useContext(AuthContext)
+  // Function to truncate  text to specific word count
   const truncateText = (text, wordCount) => {
     if (!text) return '';
     const words = text.split(' ');

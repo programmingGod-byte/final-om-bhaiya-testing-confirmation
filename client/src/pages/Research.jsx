@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import URLSITE from '../constant';
 import {
@@ -11,8 +11,11 @@ import {
   MenuBook, ScienceOutlined, ElectricBolt, Timer, ChevronRight, Article, CheckCircle
 } from '@mui/icons-material';
 import '../styles/Research.css';
+import AuthContext from '../context/AuthContext';
 
 const Research = () => {
+  
+    
   // === Data State ===
   const [papers, setPapers] = useState([]);
   const [filteredPapers, setFilteredPapers] = useState([]);
@@ -54,13 +57,16 @@ const Research = () => {
     'Machine Learning','EDA Tools','RTL Design','Formal Verification',
     'Power Analysis','Hardware Security'
   ];
-
+  const context = useContext(AuthContext)
+  context.ScrollToTop()
+  
   // === Fetch Papers from API on Mount ===
   useEffect(() => {
     const fetchPapers = async () => {
       setLoading(true);
       try {
         const res = await axios.get(`${URLSITE}/api/general/research-papers`);
+        console.log(res.data)
         setPapers(res.data);
         setError(null);
       } catch (err) {

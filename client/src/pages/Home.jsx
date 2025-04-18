@@ -273,7 +273,7 @@ endmodule`;
           sx={{ 
             height: 60, 
             mr: 2,
-            filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.5))'
+            
           }}
           initial={{ scale: 0.8, rotate: -15 }}
           animate={{ 
@@ -1001,7 +1001,7 @@ endmodule`;
             transition={{ duration: 0.6, delay: 0.5 }}
           >
             <Link 
-              to="/editor" 
+              to="/workspace" 
               className="inline-flex items-center px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-300"
             >
               Open in Editor

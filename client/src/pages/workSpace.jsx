@@ -83,6 +83,7 @@ export default function WorkSpace() {
   if (context.user == null) {
     navigate("/login");
   }
+  context.ScrollToTop();
 
   const [projects, setProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");

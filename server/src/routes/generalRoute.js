@@ -83,9 +83,34 @@ router.get('/chapter/:id', async (req, res) => {
   }
 });
 
-router.post('/update-chapter',(req,res)=>{
+router.post('/update-chapter',async(req,res)=>{
   console.log(req.body)
-  res.send("hello")
+  try {
+    const updatedCourse = await Chapter.findByIdAndUpdate(
+      req.body._id,
+      {
+        $set: {
+          codeExamples: req.body.codeExamples,
+          sections: req.body.sections,
+          title:req.body.title,
+          description:req.body.description
+        },
+      },
+      { new: true } // returns the updated document
+    );
+
+    console.log('Updated course:', updatedCourse);
+    res.status(200).json({
+      message:"updated succesfully"
+    })
+  } catch (err) {
+    res.status(401).json({
+      error:err,
+      message:err
+    })
+    console.error('Error updating course:', err);
+  }
+  
 })
 
 router.get("/all-modules",async (req,res)=>{
@@ -137,7 +162,7 @@ router.get('/research-papers', async (req, res) => {
         title:element.title,
         abstract:element.description,
         authors:authorsStr,
-        source:element.paperType[0],
+        source:element.source,
         publishDate:element.submissionDate,
         category:element.whatItCovers[0],
         tags:element.whatItCovers,

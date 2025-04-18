@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Container, Typography, Box, Grid, Paper, TextField, Button,
   FormControl, FormHelperText, InputLabel, MenuItem, Select,
@@ -7,8 +7,12 @@ import {
 import {
   Email, Phone, LocationOn, Send
 } from '@mui/icons-material';
+import AuthContext from '../context/AuthContext';
 
 const Contact = () => {
+  const context = useContext(AuthContext)
+    context.ScrollToTop()
+    
   const [formData, setFormData] = useState({
     name: '',
     email: '',
