@@ -8,9 +8,64 @@ const User = require("../models/User")
 const { routes } = require('../../server');
 // GET /api/admin/research-papers
 const Chapter = require("../models/Chapters");
-const { route } = require('./authRoutes');
+const PostQuestion = require("../models/PostQuestion")
 // Returns all research papers in JSON
 
+
+router.get("/all-question",async(req,res)=>{
+  try {
+    const questions = await PostQuestion.find().sort({ createdAt: -1 }); // Fetch all users
+    res.json(questions); // Send as JSON response
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+})
+
+
+
+router.post("/post-reply",async(req,res)=>{
+  let {content,questionID,author} = req.body;
+  // console.log(data)
+  try {
+    // let question = new PostQuestion(data)
+    // await question.save();
+    const reply = {
+      author:author.toString(),
+      content:content.toString(),
+    }
+    const updatedUser = await PostQuestion.findByIdAndUpdate(
+      questionID,
+      { $push: { replies: reply } }, // push to hobbies array
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    res.status(200).json(updatedUser);
+    
+    // res.status(200).json({"message":"question posted succesfully"})
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: 'Error fetching user', error: error.message });
+  } 
+})
+
+
+router.post("/upload-question",async(req,res)=>{
+  let data = req.body;
+  console.log(data)
+  try {
+    let question = new PostQuestion(data)
+    await question.save();
+    res.status(200).json({"message":"question posted succesfully"})
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: 'Error fetching user', error: err.message });
+  } 
+})
 
 // GET route to fetch user by ID
 router.get('/chapter/:id', async (req, res) => {

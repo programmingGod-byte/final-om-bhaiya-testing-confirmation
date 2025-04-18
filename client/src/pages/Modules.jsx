@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { Search, FilterList } from '@mui/icons-material';
 import URLSITE from '../constant';
+import '../styles/Forum.css';
 
 import {
   Add as AddIcon,
@@ -361,9 +362,10 @@ const Modules = () => {
                 <CardActionArea component={Link} to={`/modules/${module._id}`}>
                   <CardMedia
                     component="img"
+                    
                     style={{
-                      width:"512",
-                      height:"233"
+                      height:"233px",
+                      width:"374px"
                     }}
                     image={module.image || '/placeholder-module.jpg'}
                     alt={module.title}

@@ -170,6 +170,7 @@ const Research = () => {
   };
 
   const getPublisherLogo = (source) => {
+    console.log(source)
     switch (source) {
       case 'IEEE': return 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/3481dc7420d9835ff78be14ad22585129e9b6eb9dbb4137f3dc5060d60e09d98.png';
       case 'Springer': return 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/3faff9277e6ac28ddef0902740c708b6b1b1d97316c1d8e0bffd85591dfc92de.png';

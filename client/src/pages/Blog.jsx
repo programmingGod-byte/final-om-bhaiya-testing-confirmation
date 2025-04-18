@@ -567,10 +567,15 @@ const Blog = () => {
                           }}
                         />
                       )}
+
                       {blog.image && (
                         <CardMedia
                           component="img"
-                          height="180"
+              
+                          style={{
+                            height:"233px",
+                            width:"374px"
+                          }}
                           image={blog.image}
                           alt={blog.title}
                           onError={(e) => {
