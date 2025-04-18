@@ -180,22 +180,59 @@ const CourseContentTab = () => {
     const updatedExamples = chapter.codeExamples.filter((_, i) => i !== codeIndex);
     setChapter({ ...chapter, codeExamples: updatedExamples });
   };
-
   const handleUpload = async () => {
     if (!selectedModuleId) return alert('Please select a module first!');
-
+  
+    // Create a deep copy of the chapter to avoid modifying the state directly
+    const chapterToUpload = JSON.parse(JSON.stringify(chapter));
+    
+    // Process each section to combine main content with additional content blocks
+    chapterToUpload.sections = chapterToUpload.sections.map(section => {
+      let combinedContent = section.content || '';
+      
+      // Process content blocks and code blocks
+      if (section.contentBlocks && section.contentBlocks.length > 0) {
+        section.contentBlocks.forEach(block => {
+          if (block.type === 'content') {
+            // Append content blocks to the main content
+            combinedContent += block.content || '';
+          } else if (block.type === 'code') {
+            // Format code blocks as HTML and append to content
+            combinedContent += `
+              <pre><code class="language-${block.language}">
+  ${block.code}
+              </code></pre>
+            `;
+          }
+        });
+      }
+      
+      // Return a simplified section object that matches the MongoDB schema
+      return {
+        id: section.id,
+        title: section.title,
+        content: combinedContent
+      };
+    });
+    
     const payload = {
       moduleId: selectedModuleId,
-      ...chapter,
+      id: chapterToUpload.id,
+      title: chapterToUpload.title,
+      description: chapterToUpload.description,
+      estimatedTime: chapterToUpload.estimatedTime,
+      completed: chapterToUpload.completed,
+      codeExamples: chapterToUpload.codeExamples,
+      sections: chapterToUpload.sections
     };
-
+  
     try {
-      console.log(payload);
+      console.log('Sending payload:', payload);
       const response = await axios.post(`${URLSITE}/api/modules/upload-chapter`, payload, {
         headers: { 'Content-Type': 'application/json' },
       });
       alert("Chapter uploaded successfully");
-      navigator('/ckeditor')
+      navigator('/ckeditor');
     } catch (error) {
       console.log(error);
       if (error?.response?.data?.error?.message) {
@@ -205,7 +242,6 @@ const CourseContentTab = () => {
       }
     }
   };
-
   // Custom CKEditor plugin for better code block handling
   const editorConfig = {
     toolbar: [

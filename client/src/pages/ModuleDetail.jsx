@@ -45,8 +45,9 @@ const ModuleDetail = () => {
   const [allUserData,setAllUserData] = useState(null)
   // Fetch module data
   function isModuleFreePaid(moduleID) {
+
     if (!allUserData || !allUserData.paidModule) return false;
-    
+    if(module.moduleType=="free") return true;
     return allUserData.paidModule.some(module => module.moduleId === moduleID);
   }
       
@@ -75,15 +76,17 @@ const ModuleDetail = () => {
 useEffect(() => {
   const fetchModule = async () => {
     setLoading(true);
+    console.log("tryingggggggggggggggggggggggggg")
     try {
       const { data } = await axios.get(`${URLSITE}/api/general/get-module/${id}`);
+      console.log(data)
       setModule(data);
       // If API fails, fall back to local data
     } catch (err) {
       console.log("API fetch failed, using local data:", err);
       const moduleData = getModuleById(id);
       if (moduleData) {
-        setModule(moduleData);
+        // setModule(moduleData);
       }
     } finally {
       setLoading(false);
@@ -190,7 +193,7 @@ const handleTabChange = (event, newValue) => {
 
   // Ensure required arrays exist to prevent "length of undefined" errors
   const syllabus = module.learnItems || [];
-  const exercises = module.exercises || [];
+  const exercises = module.codeExamples || [];
   const practicalExamples = module.codeExamples || [];
   const codeExamples = module.overviewCodeSamples || [];
   const resources = module.resources || [];
@@ -775,12 +778,14 @@ const handleTabChange = (event, newValue) => {
             <Typography variant="h5" gutterBottom sx={{ borderLeft: '4px solid #6a0dad', pl: 2 }}>Practical Examples</Typography>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="body1">
-                Master your skills with these <strong>{practicalExamples.length || exercises.length} practical examples</strong>. Complete them to reinforce your learning.
+                Master your skills with these <strong>{practicalExamples.length } practical examples</strong>. Complete them to reinforce your learning.
               </Typography>
               
             </Box>
             
-            <Paper elevation={0} variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+            {
+              practicalExamples.length!=0?
+              <Paper elevation={0} variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
               {(practicalExamples.length > 0 ? practicalExamples : exercises).map((example, index) => (
                 <Box 
                   key={example.id || index}
@@ -946,7 +951,8 @@ const handleTabChange = (event, newValue) => {
                   )}
                 </Box>
               ))}
-            </Paper>
+            </Paper>:console.log("")
+            }
           </Box>
         )}
       </Box>

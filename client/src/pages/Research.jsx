@@ -171,12 +171,12 @@ const Research = () => {
 
   const getPublisherLogo = (source) => {
     switch (source) {
-      case 'IEEE': return '/ieee.png';
-      case 'Springer': return '/SPRINGER.png';
-      case 'ACM': return '/ACM.png';
-      case 'arXiv': return '/OTHER.png';
-      case 'Elsevier': return '/OTHER.png';
-      default: return '/OTHER.png';
+      case 'IEEE': return 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/3481dc7420d9835ff78be14ad22585129e9b6eb9dbb4137f3dc5060d60e09d98.png';
+      case 'Springer': return 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/3faff9277e6ac28ddef0902740c708b6b1b1d97316c1d8e0bffd85591dfc92de.png';
+      case 'ACM': return 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/7c2b5c6df3b334cd24361b498e6e70256de27d47436a9f6a698d76712261fc60.png';
+      // case 'arXiv': return '/OTHER.png';
+      // case 'Elsevier': return '/OTHER.png';
+      default: return 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/06e326f661b084e9039068464aabc829dfe4bc4bdf75af788d1288b6da2c00a1.png';
     }
   };
 
@@ -550,7 +550,7 @@ const Research = () => {
                           component="img"
                           
                           height="180"
-                          image={paper.image}
+                          image={getPublisherLogo(paper.source)}
                           alt={paper.title}
                           sx={{ 
                             objectFit: 'contain',

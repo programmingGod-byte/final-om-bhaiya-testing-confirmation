@@ -7,7 +7,8 @@ const moduleSchema = require("../models/ModuleSchema");
 const User = require("../models/User")
 const { routes } = require('../../server');
 // GET /api/admin/research-papers
-const Chapter = require("../models/Chapters")
+const Chapter = require("../models/Chapters");
+const { route } = require('./authRoutes');
 // Returns all research papers in JSON
 
 
@@ -26,6 +27,11 @@ router.get('/chapter/:id', async (req, res) => {
     res.status(500).json({ message: 'Error fetching user', error: err.message });
   }
 });
+
+router.post('/update-chapter',(req,res)=>{
+  console.log(req.body)
+  res.send("hello")
+})
 
 router.get("/all-modules",async (req,res)=>{
   try {

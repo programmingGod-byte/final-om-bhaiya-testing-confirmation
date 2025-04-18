@@ -361,7 +361,10 @@ const Modules = () => {
                 <CardActionArea component={Link} to={`/modules/${module._id}`}>
                   <CardMedia
                     component="img"
-                    height="160"
+                    style={{
+                      width:"512",
+                      height:"233"
+                    }}
                     image={module.image || '/placeholder-module.jpg'}
                     alt={module.title}
                   />

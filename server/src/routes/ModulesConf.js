@@ -116,6 +116,7 @@ router.post('/get-modules', async (req, res) => {
 
 
   router.post('/upload-chapter',async(req,res)=>{
+    console.log("################UPLOAD CAMHPTER##################")
     console.log(req.body)
     
     try {
@@ -136,7 +137,7 @@ router.post('/get-modules', async (req, res) => {
             { new: true, runValidators: true }
           );
 
-          console.log(updatedUser)
+          // console.log(updatedUser)
 
 
         // res.status(201).json({ message: 'Saved successfully' });
