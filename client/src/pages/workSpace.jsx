@@ -7,6 +7,7 @@ import {
   Fade,
   Zoom,
 } from '@mui/material';
+import ResponsiveDialog from "../utility/Dialog"
 import {
   ElectricBolt as ElectricBoltIcon,
   Code,
@@ -87,6 +88,8 @@ export default function WorkSpace() {
 
   const [projects, setProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [openDialog,setOpenDialog] = useState(false)
+  const [errorText,setErrorText] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newProject, setNewProject] = useState({
     title: "",
@@ -154,24 +157,31 @@ export default function WorkSpace() {
         description: newProject.description,
       });
 
-      const project = {
-        id: res.data.project._id,
-        title: newProject.title,
-        description: newProject.description,
-        thumbnail: `/placeholder.svg?height=150&width=250&text=${newProject.title.replace(/\s+/g, "+")}`,
-        icon: randomIcon,
-        color: randomColor.gradient,
-        bgColor: randomColor.bg,
-        borderColor: randomColor.border,
-        lastEdited: "Just now",
-        starred: false,
-      };
-
-      if (res.status === 200) {
-        setProjects([project, ...projects]);
+      if(res.data.success==true){
+        const project = {
+          id: res.data.project._id,
+          title: newProject.title,
+          description: newProject.description,
+          thumbnail: `/placeholder.svg?height=150&width=250&text=${newProject.title.replace(/\s+/g, "+")}`,
+          icon: randomIcon,
+          color: randomColor.gradient,
+          bgColor: randomColor.bg,
+          borderColor: randomColor.border,
+          lastEdited: "Just now",
+          starred: false,
+        };
+  
+        if (res.status === 200) {
+          setProjects([project, ...projects]);
+        }
+      }else{
+        console.log(res)
+        setOpenDialog(true)
+        setErrorText(res.data.message)
       }
     } catch (error) {
-      alert("Some error occurred");
+      // setOpenDialog(true)
+      // setErrorText(error.data.message)
     }
 
     setNewProject({ title: "", description: "" });
@@ -204,6 +214,7 @@ export default function WorkSpace() {
 
   return (
     <>
+    <ResponsiveDialog open={openDialog} errorText={errorText} setOpen={setOpenDialog}/>
       <Box className="forum-header bg-gradient-to-br from-indigo-900 to-purple-900">
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           <Container maxWidth="lg">

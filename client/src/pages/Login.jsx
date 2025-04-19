@@ -161,6 +161,7 @@ function GoogleLoginButton() {
               <TextField
                 fullWidth
                 margin="normal"
+                disabled={true}
                 label="Email Address"
                 type="email"
                 name="email"
@@ -181,6 +182,7 @@ function GoogleLoginButton() {
                 fullWidth
                 margin="normal"
                 label="Password"
+                disabled={true}
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={formData.password}
@@ -229,26 +231,14 @@ function GoogleLoginButton() {
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={true}
                 size="large"
                 sx={{ mt: 3, mb: 2 }}
               >
                 Sign In
               </Button>
               
-              <Divider sx={{ my: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  OR
-                </Typography>
-              </Divider>
               
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="body2">
-                  Don't have an account yet?{' '}
-                  <Link to="/register" style={{ color: '#6a0dad', textDecoration: 'none' }}>
-                    Sign Up
-                  </Link>
-                </Typography>
-              </Box>
             </form>
           </Paper>
           
@@ -272,5 +262,4 @@ function GoogleLoginButton() {
     </Box>
   );
 };
-
-export default Login; 
+export default Login;

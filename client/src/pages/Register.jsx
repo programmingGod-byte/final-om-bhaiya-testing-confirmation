@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import axios from "axios"
 import { Link, useNavigate } from 'react-router-dom';
+
 import { 
   Box, Typography, TextField, Button, Paper, Grid, 
   Divider, Snackbar, Alert, InputAdornment, IconButton 
 } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Person, Lock } from '@mui/icons-material';
-
+import { GoogleLogin } from '@react-oauth/google';
+import URLSITE from '../constant';
+import AuthContext from '../context/AuthContext';
 const Register = () => {
   const navigate = useNavigate();
+   const  {user,setUser} = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [notification, setNotification] = useState({
@@ -38,6 +43,46 @@ const Register = () => {
       });
     }
   };
+
+  function GoogleLoginButton() {
+    const handleSuccess = async (credentialResponse) => {
+      const { credential } = credentialResponse;
+      console.log("$$$$$$$$$$$$$$$credentials ")
+      console.log(credential)
+      // Send to backend
+      const res = await axios.post(`${URLSITE}/api/auth/google`, {
+        token: credential
+    });
+      console.log(res)
+  
+      if(res.status==200){
+        let jwtToken = res.data.token
+        console.log(jwtToken)
+        localStorage.setItem('VeriGeektoken', res.data.token);
+        setUser({
+          name:res.data.name,
+          email:res.data.email
+        })
+        navigate('/')
+      }else{
+        setErrorText("cannot able to login please try again")
+        setDialogOpen(true)
+      }
+  
+  
+    };
+  
+    return (
+      <GoogleLogin
+        onSuccess={handleSuccess}
+        onError={() => console.log('Login Failed')}
+      />
+    );
+  }
+  
+  
+  
+
 
   const validateForm = () => {
     const newErrors = {};
@@ -84,7 +129,7 @@ const Register = () => {
         
         // Redirect after a delay
         setTimeout(() => {
-          navigate('/login');
+          // navigate('/login');
         }, 1500);
       }, 1000);
     }
@@ -108,6 +153,9 @@ const Register = () => {
                 component="img" 
                 src="/images/LOGO.png" 
                 alt="VeriGeek Logo" 
+                style={{
+                  margin:"auto"
+                }}
                 sx={{ 
                   width: 120, 
                   mb: 2 
@@ -122,6 +170,8 @@ const Register = () => {
             </Box>
             
             <form onSubmit={handleSubmit} noValidate>
+
+            <GoogleLoginButton/>
               <TextField
                 fullWidth
                 margin="normal"

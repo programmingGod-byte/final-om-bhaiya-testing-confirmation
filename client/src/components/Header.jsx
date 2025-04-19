@@ -182,13 +182,10 @@ const Header = () => {
         </List>
       ) : (
         <List>
+          
           <ListItem button component={Link} to="/login">
-            <ListItemIcon><AccountCircle /></ListItemIcon>
-            <ListItemText primary="Login" />
-          </ListItem>
-          <ListItem button component={Link} to="/register">
             <ListItemIcon><Person /></ListItemIcon>
-            <ListItemText primary="Register" />
+            <ListItemText primary="Get Started" />
           </ListItem>
 
          
@@ -413,22 +410,15 @@ const Header = () => {
               </>
             ) : (
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                <Button 
-                  color="inherit" 
-                  component={Link} 
-                  to="/login"
-                  sx={{ mr: 1 }}
-                >
-                  Login
-                </Button>
+                
                 <Button 
                   variant="contained"
                   color="secondary"
                   component={Link} 
-                  to="/register"
+                  to="/login"
                   sx={{ bgcolor: 'white', color: '#6a0dad' }}
                 >
-                  Register
+                  Get Started
                 </Button>
 
       

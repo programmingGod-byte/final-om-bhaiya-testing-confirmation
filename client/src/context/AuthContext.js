@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
     
     const fetchProfile = async () => {
       const token = localStorage.getItem('VeriGeektoken');
+      // const location = useLocation();
       console.log(token)
       try {
         const res = await axios.get(`${URLSITE}/api/auth/profile`, {

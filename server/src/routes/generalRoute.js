@@ -26,6 +26,7 @@ router.get("/all-question",async(req,res)=>{
 
 router.post("/post-reply",async(req,res)=>{
   let {content,questionID,author} = req.body;
+  console.log(req.body)
   // console.log(data)
   try {
     // let question = new PostQuestion(data)

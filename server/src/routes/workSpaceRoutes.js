@@ -8,6 +8,8 @@ router.get('/create-workspace', async (req, res) => {
 })
 // /api/workspace/
 router.post('/create-workspace', async (req, res) => {
+    
+
     const { email, title, description } = req.body;
     console.log(email, title, description)
     if (!email || !title || !description) {
@@ -15,6 +17,15 @@ router.post('/create-workspace', async (req, res) => {
     }
 
     try {
+
+        const count = await ProjectSchema.countDocuments({ email: req.body.email });
+        console.log(req.body)
+        console.log(count)
+
+        if(count>=5){
+            return res.status(200).json({ success: false, message: 'cannot create more than five workspace buy some module to create it' });
+        }
+
         const newProject = new ProjectSchema({
             email,
             title,
@@ -32,10 +43,10 @@ router.post('/create-workspace', async (req, res) => {
 
         await newProjectFilesList.save()
 
-        res.status(200).json({ success: true, project: newProject });
+        res.status(200).json({ success: true, project: newProjectFilesList });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Failed to create project' });
+        res.status(200).json({ success: false, message: 'Failed to create project' });
     }
 });
 
