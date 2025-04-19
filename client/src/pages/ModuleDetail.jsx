@@ -588,10 +588,17 @@ const handleTabChange = (event, newValue) => {
                           <ListItemText 
                             primary={resource.title} 
                             secondary={resource.type} 
-                          />
-                          <Button variant="outlined" size="small" component="a" href={resource.url}>
-                            Download
-                          </Button>
+                          /><Button
+                          variant="outlined"
+                          size="small"
+                          component="a"
+                          href={resource.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Download
+                        </Button>
+                        
                         </ListItem>
                         {index < resources.length - 1 && <Divider component="li" />}
                       </React.Fragment>
