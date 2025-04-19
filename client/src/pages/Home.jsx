@@ -612,13 +612,33 @@ endmodule`;
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Link 
-            to="/modules" 
-            className="inline-flex items-center px-6 py-3 border border-purple-600 text-purple-600 rounded-md hover:bg-purple-50 transition-colors duration-300 font-medium"
-          >
-            Explore All Modules
-            <ArrowForward className="ml-2" />
-          </Link>
+          
+
+      <Box className="trending-papers" sx={{ mt: 8, py: 5, px: 4, borderRadius: 4 }}>
+                  <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
+                   Featured Books
+                  </Typography>
+                  
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+  <Typography
+    variant="body1"
+    paragraph
+    sx={{ 
+      opacity: 0.8, 
+      maxWidth: '800px', 
+      mb: 4,
+      textAlign: 'center' 
+    }}
+  >
+    Step into the world of digital logic with "Mastering Verilog for Digital Design", 
+    your comprehensive guide to hardware description and system modeling. 
+    Whether you're a beginner or an intermediate learner, this book offers a clear, 
+    structured path to understanding Verilog and applying it in real-world scenarios.
+  </Typography>
+</Box>
+         </Box> 
+
+         
         </motion.div>
       </motion.div>
 
@@ -641,72 +661,78 @@ endmodule`;
 
       {/* Featured Modules */}
       <motion.div variants={containerVariants}>
-        <motion.h2 
-        style={{
-          marginTop:"3rem"
-        }}
-          variants={itemVariants}
-          className="text-3xl mb-8 text-purple-800 text-center font-bold"
-        >
-          Featured Books
-          <motion.span 
-            className="block h-1 w-24 bg-purple-600 mx-auto mt-2 rounded-full"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          />
-        </motion.h2>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-12">
-          {featuredBook.map((module, index) => (
+        
+        
+<div className="container mx-auto px-4">
+  <div
+    className="
+      grid
+      grid-cols-1 sm:grid-cols-2 md:grid-cols-3
+      gap-8
+      mb-12
+      justify-evenly     
+    "
+  >
+    {featuredBook.map((module) => (
+      <motion.div 
+        key={module.id}
+        variants={itemVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        whileHover={{ scale: 1.03 }}
+        transition={{ type: "spring", stiffness: 300 }}
+        className="w-full h-full"
+      >
+        <div className="w-full h-full shadow-lg rounded-md overflow-hidden bg-white transition-all duration-300 hover:shadow-xl flex flex-col">
+          <Link to={`${module.id}`} className="flex flex-col h-full">
+            {/* Full-cover image */}
             <motion.div 
-              key={module.id}
-              variants={itemVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className="h-full"
+              className="w-full h-64 overflow-hidden"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.3 }}
             >
-              <div className="h-full shadow-lg rounded-md overflow-hidden bg-white transition-all duration-300 hover:shadow-xl">
-                <Link to={`${module.id}`} className="block">
-                  <motion.img
-                    className="w-full h-48 object-cover"
-                    src={module.image}
-                    alt={module.title}
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  <div className="p-5">
-                    <div className="flex justify-between items-center mb-3">
-                      <h3 className="text-lg font-semibold">
-                        {module.title}
-                      </h3>
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        module.level === 'Beginner' ? 'bg-blue-50 text-blue-800' : 
-                        module.level === 'Intermediate' ? 'bg-amber-50 text-amber-800' : 'bg-red-50 text-red-800'
-                      }`}>
-                        {module.level}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-4">
-                      {module.description}
-                    </p>
-                    <motion.div 
-                      whileHover={{ x: 5 }}
-                      className="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center"
-                    >
-                      Learn More
-                      <ArrowForward size={16} className="ml-1" />
-                    </motion.div>
-                  </div>
-                </Link>
-              </div>
+              <img
+                src={module.image}
+                alt={module.title}
+                className="w-full h-full object-cover"
+              />
             </motion.div>
-          ))}
+
+            <div className="p-5 flex flex-col flex-grow">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-semibold">{module.title}</h3>
+                <span
+                  className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    module.level === "Beginner"
+                      ? "bg-blue-50 text-blue-800"
+                      : module.level === "Intermediate"
+                      ? "bg-amber-50 text-amber-800"
+                      : "bg-red-50 text-red-800"
+                  }`}
+                >
+                  {module.level}
+                </span>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">{module.description}</p>
+              <motion.div 
+                whileHover={{ x: 5 }}
+                className="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center mt-auto"
+              >
+                Learn More
+                <ArrowForward size={16} className="ml-1" />
+              </motion.div>
+            </div>
+          </Link>
         </div>
-        
+      </motion.div>
+    ))}
+  </div>
+</div>
+
+
+
       </motion.div>
 
 

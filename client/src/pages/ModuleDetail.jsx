@@ -26,6 +26,34 @@ import URLSITE from '../constant';
 import AuthContext from '../context/AuthContext';
 
 
+
+const OverviewText = ({ text }) => {
+  const [showFull, setShowFull] = useState(false);
+
+  const words = text.split(' ');
+  const isLong = words.length > 40;
+  const displayedText = showFull ? text : words.slice(0, 60).join(' ') + (isLong ? '...' : '');
+
+  return (
+    <>
+      <Typography paragraph sx={{ fontSize: '1.05rem', lineHeight: 1.6 }}>
+        {displayedText}
+      </Typography>
+      {isLong && (
+        <Button
+          size="small"
+          variant="text"
+          onClick={() => setShowFull(prev => !prev)}
+          sx={{ textTransform: 'none', fontSize: '0.9rem' }}
+        >
+          {showFull ? 'Show Less' : 'Show More'}
+        </Button>
+      )}
+    </>
+  );
+};
+
+
 hljs.registerLanguage('verilog', require('highlight.js/lib/languages/verilog'));
 
 
@@ -216,8 +244,8 @@ const handleTabChange = (event, newValue) => {
   // Ensure required arrays exist to prevent "length of undefined" errors
   const syllabus = module.learnItems || [];
   const exercises = module.codeExamples || [];
-  const practicalExamples = module.overviewCodeSamples || [];
-  const codeExamples = module.codeExamples || [];
+  const practicalExamples = module.codeExamples || [];
+  const codeExamples = module.overviewCodeSamples || [];
   const resources = module.resources || [];
   const relatedModules = [];
 
@@ -492,7 +520,7 @@ const handleTabChange = (event, newValue) => {
         {tabValue === 0 && (
           <Box>
             <Typography variant="h5" gutterBottom sx={{ borderLeft: '4px solid #6a0dad', pl: 2 }}>About This Module</Typography>
-            <Typography paragraph sx={{ fontSize: '1.05rem', lineHeight: 1.6 }}>{module.overview}</Typography>
+           <OverviewText text={module?.overview}/>
             
             {/* Learning Outcomes */}
             {syllabus.length > 0 && (
@@ -719,7 +747,11 @@ const handleTabChange = (event, newValue) => {
                           justifyContent: 'center',
                           fontWeight: 'bold'
                         }}>
+                      {
+                        index+1
+                      }
                         </Box>
+                      
                       
                     </Box>
                     
@@ -739,7 +771,7 @@ const handleTabChange = (event, newValue) => {
                             }} 
                           />
                           <Chip 
-                            label={typeof chapter.estimatedTime === 'string' ? chapter.estimatedTime : String(chapter.estimatedTime)} 
+                            label={typeof chapter.estimatedTime === 'string' ? module.level : String(module.level)} 
                             size="small"
                             sx={{ bgcolor: 'rgba(0, 0, 0, 0.05)' }} 
                           />
@@ -957,7 +989,7 @@ const handleTabChange = (event, newValue) => {
                                 >
                                   Copy Testbench
                                 </Button>
-                                <pre style={{ margin: 0 }}>{typeof example.testbench === 'string' ? example.testbench : JSON.stringify(example.testbench, null, 2)}</pre>
+                                <pre style={{ margin: 0,backgroundColor:"black" }}>{typeof example.testbench === 'string' ? example.testbench : JSON.stringify(example.testbench, null, 2)}</pre>
                               </Box>
                             </>
                           )}
