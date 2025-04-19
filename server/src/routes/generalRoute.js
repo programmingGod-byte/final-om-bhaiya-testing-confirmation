@@ -84,6 +84,7 @@ router.get('/chapter/:id', async (req, res) => {
 });
 
 router.post('/update-chapter',async(req,res)=>{
+  console.log("############## chapter updated ###########")
   console.log(req.body)
   try {
     const updatedCourse = await Chapter.findByIdAndUpdate(

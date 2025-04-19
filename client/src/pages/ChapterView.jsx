@@ -92,6 +92,7 @@ const ChapterView = () => {
 
   // Check user access to paid modules
   useEffect(() => {
+    if (!moduleId || !module || !module.moduleType) return;
     if (!context?.user) {
       setIsAuthenticated(false);
       return;
@@ -121,7 +122,7 @@ const ChapterView = () => {
     };
 
     checkModuleAccess();
-  }, [context?.user, moduleId, module, navigate]);
+  }, [context?.user]);
 
   // Apply syntax highlighting
   useEffect(() => {
@@ -315,26 +316,20 @@ const ChapterView = () => {
 
   // Handle section title change
   const handleSectionTitleChange = (sectionId, newTitle) => {
-    const updatedSections = editedSections.map(section => {
-      if (section.id === sectionId) {
-        return { ...section, title: newTitle };
-      }
-      return section;
-    });
-    
-    setEditedSections(updatedSections);
+    setEditedSections(prevSections => 
+      prevSections.map(section => 
+        section.id === sectionId ? { ...section, title: newTitle } : section
+      )
+    );
   };
 
   // Handle code example changes
   const handleCodeExampleChange = (exampleId, field, value) => {
-    const updatedCodeExamples = editedCodeExamples.map(example => {
-      if (example.id === exampleId) {
-        return { ...example, [field]: value };
-      }
-      return example;
-    });
-    
-    setEditedCodeExamples(updatedCodeExamples);
+    setEditedCodeExamples(prevExamples => 
+      prevExamples.map(example => 
+        example.id === exampleId ? { ...example, [field]: value } : example
+      )
+    );
   };
 
   // Handle cancelling editing mode
@@ -344,64 +339,102 @@ const ChapterView = () => {
     setEditedCodeExamples([]);
     setEditedChapterTitle("");
     setEditedChapterDescription("");
-    
-    // Reset all section contents to their original state
-    if (chapterContent?.sections) {
-      chapterContent.sections.forEach(section => {
-        if (sectionRefs.current[section.id]) {
-          const sectionElement = sectionRefs.current[section.id];
-          sectionElement.innerHTML = section.content || "";
-        }
-      });
-    }
   };
 
-  // Handle saving changes
+  // Handle section content change - improved version
+  const handleSectionContentChange = (sectionId) => {
+    if (!sectionRefs.current[sectionId]) return;
+    
+    const updatedContent = sectionRefs.current[sectionId].innerHTML;
+    
+    // Find the section to update
+    setEditedSections(prevSections => 
+      prevSections.map(section => 
+        section.id === sectionId ? { ...section, content: updatedContent } : section
+      )
+    );
+  };
+
+  // Set up event listeners for all editable sections
+  useEffect(() => {
+    if (!isEditing || !chapterContent?.sections) return;
+    
+    // Create event listeners for all sections
+    const listeners = {};
+    
+    chapterContent.sections.forEach(section => {
+      const sectionId = section.id;
+      if (sectionRefs.current[sectionId]) {
+        const handleInput = () => handleSectionContentChange(sectionId);
+        sectionRefs.current[sectionId].addEventListener('input', handleInput);
+        listeners[sectionId] = handleInput;
+      }
+    });
+    
+    // Clean up listeners when component unmounts or editing state changes
+    return () => {
+      Object.entries(listeners).forEach(([sectionId, listener]) => {
+        if (sectionRefs.current[sectionId]) {
+          sectionRefs.current[sectionId].removeEventListener('input', listener);
+        }
+      });
+    };
+  }, [isEditing, chapterContent?.sections]);
+
+  // Improved handle save changes function
   const handleSaveChanges = async () => {
     if (!chapterContent) return;
     
     setSaveLoading(true);
     
     try {
-      // Collect updated content from all sections
-      const updatedSections = chapterContent.sections ? chapterContent.sections.map(section => {
+      // First, get the latest content from all section refs
+      const sectionsToUpdate = chapterContent.sections?.map(section => {
         const sectionElement = sectionRefs.current[section.id];
-        const updatedContent = sectionElement ? sectionElement.innerHTML : (section.content || "");
+        const updatedContent = sectionElement ? sectionElement.innerHTML : section.content || "";
         
-        // Find the edited title for this section
-        const sectionIndex = editedSections.findIndex(s => s.id === section.id);
-        const updatedTitle = sectionIndex >= 0 ? editedSections[sectionIndex].title : section.title;
+        // Look for any edited section title in the edited sections state
+        const editedSection = editedSections.find(s => s.id === section.id);
+        const updatedTitle = editedSection?.title || section.title || "";
         
         return {
           ...section,
           title: updatedTitle,
           content: updatedContent
         };
-      }) : [];
+      }) || [];
       
-      // Collect updated code examples
-      const updatedCodeExamples = chapterContent.codeExamples && editedCodeExamples.length > 0 
-        ? editedCodeExamples.map(example => {
-            const codeElement = codeExampleRefs.current[`${example.id}-code`];
-            const updatedCode = codeElement ? codeElement.textContent : example.code;
-            
-            return {
-              ...example,
-              code: updatedCode || ""
-            };
-          })
-        : chapterContent.codeExamples || [];
+      // Get updated code examples
+      const codeExamplesToUpdate = chapterContent.codeExamples?.map(example => {
+        const codeElement = codeExampleRefs.current[`${example.id}-code`];
+        const updatedCode = codeElement ? codeElement.textContent : example.code || "";
+        
+        // Find any edited fields from the state
+        const editedExample = editedCodeExamples.find(e => e.id === example.id);
+        
+        return {
+          ...example,
+          title: editedExample?.title || example.title || "",
+          description: editedExample?.description || example.description || "",
+          explanation: editedExample?.explanation || example.explanation || "",
+          code: updatedCode,
+          language: editedExample?.language || example.language || ""
+        };
+      }) || [];
       
-      // Create updated chapter content
+      // Create the updated chapter content object
       const updatedChapterContent = {
         ...chapterContent,
         title: editedChapterTitle,
         description: editedChapterDescription,
-        sections: updatedSections,
-        codeExamples: updatedCodeExamples
+        sections: sectionsToUpdate,
+        codeExamples: codeExamplesToUpdate
       };
       
-      // Send the updated content to the server
+      // Debug log to see what we're sending
+      console.log("Saving updated content:", updatedChapterContent);
+      
+      // Send update request to the server
       const response = await axios.post(
         `${URLSITE}/api/general/update-chapter`,
         updatedChapterContent,
@@ -427,7 +460,7 @@ const ChapterView = () => {
       setSaveLoading(false);
     }
   };
-
+  
   // Render loading state
   if (loading) {
     return (
@@ -534,10 +567,10 @@ const ChapterView = () => {
                 Modules
               </Link>
               <Link to={`/modules/${moduleId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                {context?.currentModule?.title || module.title}
+                {context?.currentModule?.title}
               </Link>
               <Typography color="text.primary">
-                Chapter {chapterId}
+                Chapter {chapter?.title}
               </Typography>
             </Breadcrumbs>
           </Box>
@@ -555,7 +588,7 @@ const ChapterView = () => {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <MenuBook sx={{ mr: 1, color: 'primary.main' }} />
             <Typography variant="subtitle1">
-              Chapter {chapterId} of {module.chapters?.length || 0}
+              Chapter {chapter?.title}
               {isChapterCompleted && !isEditing && (
                 <Chip 
                   size="small" 
@@ -704,6 +737,7 @@ const ChapterView = () => {
                 dangerouslySetInnerHTML={{ __html: section.content || "" }}
                 ref={el => sectionRefs.current[section.id] = el}
                 suppressContentEditableWarning={true}
+                onBlur={() => isEditing && handleSectionContentChange(section.id)}
               />
             </Box>
           ))}
@@ -794,83 +828,75 @@ const ChapterView = () => {
         {/* Floating Save Button when editing */}
         {isEditing && (
           <Box
-            sx={{
-              position: 'fixed',
-              bottom: 30,
-              right: 30,
-              zIndex: 1000,
-              display: 'flex',
-              gap: 2
-            }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Save />}
-              onClick={handleSaveChanges}
-              disabled={saveLoading}
-              sx={{ boxShadow: 3 }}
-            >
-              {saveLoading ? 'Saving...' : 'Save Changes'}
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              startIcon={<Cancel />}
-              onClick={handleCancelEditing}
-              sx={{ boxShadow: 3 }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        )}
-        
-        {/* Chapter navigation */}
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            mt: 4,
-            mb: 6,
-            mx: { xs: 2, md: 8 }
+          sx={{
+            position: 'fixed',
+            bottom: 30,
+            right: 30,
+            zIndex: 1000,
+            display: 'flex',
+            gap: 2
           }}
         >
-          <Button 
-            variant="outlined"
-            disabled={isFirstChapter}
-            onClick={navigateToPrevChapter}
-            startIcon={<NavigateBefore />}
-            sx={{ visibility: isFirstChapter ? 'hidden' : 'visible' }}
-          >
-            Previous
-          </Button>
-          
-          <Button 
+          <Button
             variant="contained"
-            onClick={navigateToNextChapter}
-            endIcon={<NavigateNext />}
-            sx={{ visibility: isLastChapter ? 'hidden' : 'visible' }}
+            color="error"
+            startIcon={<Cancel />}
+            onClick={handleCancelEditing}
           >
-            Next Topic
+            Cancel
           </Button>
-        </Box>
-      </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Save />}
+            onClick={handleSaveChanges}
+            disabled={saveLoading}
+          >
+            {saveLoading ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </Box>)}
+
+
+        {/* Navigation buttons */}
+<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
+  <Button 
+    variant="outlined"
+    startIcon={<NavigateBefore />}
+    // disabled={isFirstChapter}
+    // component={Link}
+    // to={prevChapter ? `/modules/${moduleId}/chapters/${prevChapter.id}` : '#'}
+    onClick={navigateToPrevChapter}
+  >
+    Previous Chapter
+  </Button>
+  <Button 
+    variant="contained"
+    endIcon={<NavigateNext />}
+    // disabled={isLastChapter}
+    // component={Link}
+    // to={nextChapter ? `/modules/${moduleId}/chapters/${nextChapter.id}` : '#'}
+    onClick={navigateToNextChapter}
+  >
+    Next Chapter
+  </Button>
+</Box>
+
 {/* Snackbar for notifications */}
 <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={4000}
-        onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert 
-          onClose={() => setSnackbarOpen(false)} 
-          severity={snackbarSeverity}
-          variant="filled"
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </>
-  );
+  open={snackbarOpen}
+  autoHideDuration={6000}
+  onClose={() => setSnackbarOpen(false)}
+>
+  <Alert 
+    onClose={() => setSnackbarOpen(false)} 
+    severity={snackbarSeverity}
+  >
+    {snackbarMessage}
+  </Alert>
+</Snackbar>
+</Box>
+</>
+);
 };
 
 export default ChapterView;
