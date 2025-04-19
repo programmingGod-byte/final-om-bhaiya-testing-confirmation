@@ -53,6 +53,26 @@ const slideUp = {
 
 const Home = () => {
   // Your existing data arrays (featuredModules, careerPaths, industryTrends, codeExample) remain the same
+  const featuredBook = [
+    {
+      id: 'https://store.pothi.com/book/om-maheshwari-verilog-foundations-digital-design-essentials/',
+      title: 'Verilog Foundation: Digital Design',
+      description: '',
+      image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/74699aafd58c45b842bcfa0731addb8f3e5444a838ef4ad839a0437dd8701003.png',
+      level: ''
+    },
+    {
+      id: 'https://store.pothi.com/book/om-maheshwari-advanced-verilog-modeling-verification-soc-design/',
+      title: 'Advance Verilog Modelling and Verification',
+      description: '',
+      image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/2e6d8b21737d014daba7f1cc3820158d1eafaf2d79d901efa26dbdd05377e7d7.png',
+      level: ''
+    },
+   
+  ];
+
+
+
   const featuredModules = [
     {
       id: 1,
@@ -77,6 +97,7 @@ const Home = () => {
     }
   ];
 
+ 
   // Industry career paths
   const careerPaths = [
     {
@@ -549,7 +570,7 @@ endmodule`;
               className="h-full"
             >
               <div className="h-full shadow-lg rounded-md overflow-hidden bg-white transition-all duration-300 hover:shadow-xl">
-                <Link to={`/modules/${module.id}`} className="block">
+                <Link  className="block">
                   <motion.img
                     className="w-full h-48 object-cover"
                     src={module.image}
@@ -600,6 +621,107 @@ endmodule`;
           </Link>
         </motion.div>
       </motion.div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      {/* Featured Modules */}
+      <motion.div variants={containerVariants}>
+        <motion.h2 
+        style={{
+          marginTop:"3rem"
+        }}
+          variants={itemVariants}
+          className="text-3xl mb-8 text-purple-800 text-center font-bold"
+        >
+          Featured Books
+          <motion.span 
+            className="block h-1 w-24 bg-purple-600 mx-auto mt-2 rounded-full"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          />
+        </motion.h2>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-12">
+          {featuredBook.map((module, index) => (
+            <motion.div 
+              key={module.id}
+              variants={itemVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="h-full"
+            >
+              <div className="h-full shadow-lg rounded-md overflow-hidden bg-white transition-all duration-300 hover:shadow-xl">
+                <Link to={`${module.id}`} className="block">
+                  <motion.img
+                    className="w-full h-48 object-cover"
+                    src={module.image}
+                    alt={module.title}
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                  <div className="p-5">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-lg font-semibold">
+                        {module.title}
+                      </h3>
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                        module.level === 'Beginner' ? 'bg-blue-50 text-blue-800' : 
+                        module.level === 'Intermediate' ? 'bg-amber-50 text-amber-800' : 'bg-red-50 text-red-800'
+                      }`}>
+                        {module.level}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                      {module.description}
+                    </p>
+                    <motion.div 
+                      whileHover={{ x: 5 }}
+                      className="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center"
+                    >
+                      Learn More
+                      <ArrowForward size={16} className="ml-1" />
+                    </motion.div>
+                  </div>
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        
+      </motion.div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       {/* VLSI Career Paths */}
       <motion.div 
