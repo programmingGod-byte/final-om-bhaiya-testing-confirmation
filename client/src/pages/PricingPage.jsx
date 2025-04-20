@@ -132,7 +132,7 @@ function PricingPage() {
 
 
 
-{["Research Paper","Unlimited workspace", "Access to all module"].map((feature) => (
+{["Research Paper","Unlimited workspace"].map((feature) => (
                     <li key={feature} className="flex items-start">
                       <div className="flex-shrink-0">
                       <svg
