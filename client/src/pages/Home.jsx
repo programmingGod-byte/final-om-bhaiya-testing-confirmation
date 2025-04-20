@@ -56,7 +56,7 @@ const Home = () => {
   const featuredBook = [
     {
       id: 'https://store.pothi.com/book/om-maheshwari-verilog-foundations-digital-design-essentials/',
-      title: 'Verilog Foundation: Digital Design',
+      title: 'Verilog Foundation: Building Digital Design from the Ground Up',
       description: '',
       image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/74699aafd58c45b842bcfa0731addb8f3e5444a838ef4ad839a0437dd8701003.png',
       level: ''
@@ -75,24 +75,24 @@ const Home = () => {
 
   const featuredModules = [
     {
-      id: 1,
+      id: `68014ff9e6aae64fbd8d28d9`,
       title: 'Verilog Fundamentals',
       description: 'Master the basics of Verilog HDL and get started with digital design concepts',
       image: 'https://tse1.mm.bing.net/th?id=OIP.jz0YXGGr51-sLiHhII4g5wHaEM&pid=Api&P=0&h=180',
       level: 'Beginner'
     },
     {
-      id: 23,
+      id: `6803ae22b6cba2e7c0581d05`,
       title: 'RISC-V Processor Design',
       description: 'Design a complete RISC-V processor from scratch with pipelining and hazard resolution',
       image: 'https://tse1.mm.bing.net/th?id=OIP.T5X7UbWZedVZMHdzB9YPCQHaE8&pid=Api&P=0&h=180',
       level: 'Expert'
     },
     {
-      id: 14,
-      title: 'UVM Verification',
-      description: 'Master Universal Verification Methodology for SystemVerilog testbenches',
-      image: 'https://tse1.mm.bing.net/th?id=OIP.xTfbaCirE3pvtPMZwDHJRgHaHa&pid=Api&P=0&h=180',
+      id: `6803e5f28a43ead49b3e3c56`,
+      title: 'Computer Organization and Architecture',
+      description: 'In this Computer Organization and Architecture Tutorial, you’ll learn all the basic to advanced concepts like pipelining, microprogrammed control, computer architecture, instruction design, and format.',
+      image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/8b5b465d4440e81d33804da47f9838eaa665de2e8f94bb48494468fc2450c5c1.png',
       level: 'Expert'
     }
   ];
@@ -570,7 +570,7 @@ endmodule`;
               className="h-full"
             >
               <div className="h-full shadow-lg rounded-md overflow-hidden bg-white transition-all duration-300 hover:shadow-xl">
-                <Link  className="block">
+                <Link  className="block" to={`/modules/${module.id}`}>
                   <motion.img
                     className="w-full h-48 object-cover"
                     src={module.image}
@@ -666,6 +666,9 @@ endmodule`;
         
 <div className="container mx-auto px-4">
   <div
+  style={{
+    display:"flex"
+  }}
     className="
       grid
       grid-cols-1 sm:grid-cols-2 md:grid-cols-3
@@ -683,6 +686,9 @@ endmodule`;
         viewport={{ once: true, margin: "-100px" }}
         whileHover={{ scale: 1.03 }}
         transition={{ type: "spring", stiffness: 300 }}
+        style={{
+          maxWidth:"21vw"
+        }}
         className="w-full h-full"
       >
         <div className="w-full h-full shadow-lg rounded-md overflow-hidden bg-white transition-all duration-300 hover:shadow-xl flex flex-col">

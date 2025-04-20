@@ -309,7 +309,44 @@ export function useMyContext() {
   return (
     <>
       {/* Header Section */}
+      {/* Header Section */}
+<div className="bg-gradient-to-r from-purple-700 to-purple-900 relative overflow-hidden pt-16 pb-24 text-white">
+  <div className="max-w-5xl mx-auto px-4 relative z-10">
+    <div className="flex flex-col md:flex-row items-center">
+      <div className="md:w-7/12 relative z-20">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 opacity-15 rotate-15 hidden md:block">
+          {/* Decorative icons can go here */}
+        </div>
+        
+        <div className="flex items-center gap-1 uppercase tracking-wider font-medium text-white/90 text-sm mb-3">
+          <ElectricBoltIcon className="h-4 w-4" /> VERILOG COMMUNITY
+        </div>
+        
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-6 bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+          VeriGeek Forum
+        </h1>
+        
+        <p className="text-lg text-white/85 max-w-xl mb-8">
+        VeriGeek Forum is the dedicated community platform for students, educators, and professionals passionate about Verilog, Digital Design, and Hardware Development. Built as an integral part of the VeriGeek ecosystem, this forum serves as a collaborative space to ask questions, share ideas, debug issues, and explore innovations in the world of digital logic and FPGA/ASIC design.
+        </p>
+      </div>
       
+      <div className="md:w-5/12 text-center">
+        <img
+          src="/forum-illustration.svg"
+          alt="Verilog Forum"
+          className="max-w-full h-auto"
+          onError={(e) => { e.target.style.display = 'none' }}
+        />
+      </div>
+    </div>
+  </div>
+  
+  {/* Wave shape divider */}
+  
+</div>
+
       {/* Main Forum Content */}
       <div className="bg-purple-50 min-h-screen p-4">
         <div className="max-w-5xl mx-auto">

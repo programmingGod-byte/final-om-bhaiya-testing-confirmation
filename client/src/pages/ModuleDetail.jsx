@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from "axios"
 import hljs from 'highlight.js';
 import 'highlight.js/styles/googlecode.css';
@@ -81,6 +81,7 @@ const ModuleDetail = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const context = useContext(AuthContext   )
+  const navigate = useNavigate()
   const [allUserData,setAllUserData] = useState(null)
   // Fetch module data
   function isModuleFreePaid(moduleID) {
@@ -219,6 +220,7 @@ const handleTabChange = (event, newValue) => {
   
                     if (verifyData.message) {
                         toast.success(verifyData.message)
+                        navigate(0)
                     }
                 } catch (error) {
                   toast.error(error)
