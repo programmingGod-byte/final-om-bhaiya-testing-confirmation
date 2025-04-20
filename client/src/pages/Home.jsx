@@ -75,10 +75,10 @@ const Home = () => {
 
   const featuredModules = [
     {
-      id: `68014ff9e6aae64fbd8d28d9`,
+      id: `680473d60f5aeee456bde1ab`,
       title: 'Verilog Fundamentals',
       description: 'Master the basics of Verilog HDL and get started with digital design concepts',
-      image: 'https://tse1.mm.bing.net/th?id=OIP.jz0YXGGr51-sLiHhII4g5wHaEM&pid=Api&P=0&h=180',
+      image: 'https://i.ytimg.com/vi/Zgm3xvax_As/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDJDcB5wSTe8XXniL9w5pLAXjhvxg',
       level: 'Beginner'
     },
     {
@@ -89,10 +89,10 @@ const Home = () => {
       level: 'Expert'
     },
     {
-      id: `6803e5f28a43ead49b3e3c56`,
-      title: 'Computer Organization and Architecture',
-      description: 'In this Computer Organization and Architecture Tutorial, you’ll learn all the basic to advanced concepts like pipelining, microprogrammed control, computer architecture, instruction design, and format.',
-      image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/8b5b465d4440e81d33804da47f9838eaa665de2e8f94bb48494468fc2450c5c1.png',
+      id: `68014ff9e6aae64fbd8d28d9`,
+      title: 'Foundations of Verilog: Building Blocks for Digital Design Excellence',
+      description: 'introduces the essential concepts and structures of Verilog, the hardware description language widely used in digital design',
+      image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/3db9ee014638d98a91bdc11ceec164bf85d8ff6c59f010e972dd2bb3b6214ea3.png',
       level: 'Expert'
     }
   ];

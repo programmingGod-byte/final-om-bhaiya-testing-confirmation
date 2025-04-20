@@ -184,7 +184,7 @@ const handleTabChange = (event, newValue) => {
                   "content-type": "application/json"
               },
               body: JSON.stringify({
-                  amount:1
+                  amount:99
               })
           });
 
