@@ -33,7 +33,7 @@ import AuthContext from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Cpu } from 'lucide-react';
 import URL from "../constant";
-
+import SimplePurchaseModule from "../components/LockComponent"
 const icons = [
   <BarChart key="bar-chart" className="h-5 w-5" />,
   <Layout key="layout" className="h-5 w-5" />,
@@ -90,6 +90,7 @@ export default function WorkSpace() {
   const [searchTerm, setSearchTerm] = useState("");
   const [openDialog,setOpenDialog] = useState(false)
   const [errorText,setErrorText] = useState('')
+  const [isUserPaid,setIsUserPaid] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newProject, setNewProject] = useState({
     title: "",
@@ -97,6 +98,16 @@ export default function WorkSpace() {
   });
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const dropdownRef = useRef(null);
+
+  useEffect(()=>{
+    if(!context.user) return;
+    if(context.user.wholeData.paidModule.length >0){
+      console.log("USER IS PAID")
+      console.log(context.user.wholeData.paidModule)
+      setIsUserPaid(true)
+    }
+  },[context?.user])
+
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -214,7 +225,11 @@ export default function WorkSpace() {
 
   return (
     <>
-    <ResponsiveDialog open={openDialog} errorText={errorText} setOpen={setOpenDialog}/>
+    {
+      isUserPaid?(
+        <>
+        
+        <ResponsiveDialog open={openDialog} errorText={errorText} setOpen={setOpenDialog}/>
       <Box className="forum-header bg-gradient-to-br from-indigo-900 to-purple-900">
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           <Container maxWidth="lg">
@@ -354,13 +369,16 @@ export default function WorkSpace() {
                 <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
               
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl font-medium flex items-center gap-2 text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 shadow-lg shadow-indigo-200"
-              >
-                <PlusCircle className="h-5 w-5" />
-                New Project
-              </button>
+             {
+              isUserPaid? <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl font-medium flex items-center gap-2 text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 shadow-lg shadow-indigo-200"
+            >
+              <PlusCircle className="h-5 w-5" />
+              New Project
+            </button>:null
+             }
+             
             </div>
           </div>
 
@@ -381,13 +399,13 @@ export default function WorkSpace() {
                   Clear Search
                 </button>
               ) : (
-                <button
+                isUserPaid?<button
                   onClick={() => setIsModalOpen(true)}
                   className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl font-medium flex items-center gap-2 text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 shadow-lg"
                 >
                   <PlusCircle className="h-5 w-5" />
                   Create Your First Project
-                </button>
+                </button>:null
               )}
             </div>
           ) : (
@@ -513,6 +531,14 @@ export default function WorkSpace() {
           </div>
         )}
       </div>
+ 
+        
+        </>
+      ):(
+        <SimplePurchaseModule/>
+      )
+    }
+       
     </>
   );
 }

@@ -752,55 +752,54 @@ const Research = () => {
         
         {/* Trending Papers Section */}
         <Box className="trending-papers" sx={{ mt: 8, py: 5, px: 4, borderRadius: 4 }}>
-          <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
-            Trending in Verification
-          </Typography>
-          
-          <Typography variant="body1" paragraph sx={{ opacity: 0.8, maxWidth: '800px', mb: 4 }}>
-            The most cited verification papers from the past year, showcasing groundbreaking methodologies and technologies.
-          </Typography>
-          
-          <Grid container spacing={3}>
-            {papers
-              .filter(paper => paper.category === 'Verification')
-              .sort((a, b) => b.citations - a.citations)
-              .slice(0, 3)
-              .map((paper) => (
-                <Grid item xs={12} md={4} key={`trending-${paper.id}`}>
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <ElectricBolt 
-                      sx={{ 
-                        fontSize: '2rem', 
-                        color: 'primary.main', 
-                        mt: 0.5,
-                        opacity: 0.8
-                      }} 
-                    />
-                    <Box>
-                      <Typography variant="h6" component="h3" gutterBottom sx={{ fontWeight: 600 }}>
-                        {paper.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        {paper.authors}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                        <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                          <School fontSize="small" sx={{ mr: 0.5 }} /> {paper.citations} citations
-                        </Typography>
-                        <Chip 
-                          label={paper.source} 
-                          size="small" 
-                          className={`source-badge ${getSourceBadgeClass(paper.source)}`}
-                        />
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-              ))
-            }
-          </Grid>
-        </Box>
-        
+  <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 700 }}>
+    Trending in Verification
+  </Typography>
+  
+  <Typography variant="body1" paragraph sx={{ opacity: 0.8, maxWidth: '800px', mb: 4 }}>
+    The most cited verification papers from the past year, showcasing groundbreaking methodologies and technologies.
+  </Typography>
+  
+  <Grid container spacing={3}>
+    {currentPapers
+      .filter(paper => paper.source === 'IEEE')
+      .sort((a, b) => b.citations - a.citations)
+      .slice(0, 3)
+      .map((paper) => (
+      <Grid item xs={12} md={4} key={`trending-${paper.id}`}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <ElectricBolt 
+              sx={{ 
+                fontSize: '2rem', 
+                color: 'primary.main', 
+                mt: 0.5,
+                opacity: 0.8
+              }} 
+            />
+            <Box>
+              <Typography variant="h6" component="h3" gutterBottom sx={{ fontWeight: 600 }}>
+                {paper.title}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {paper.authors}
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                  <School fontSize="small" sx={{ mr: 0.5 }} /> {paper.citations} citations
+                </Typography>
+                <Chip 
+                  label={paper.source} 
+                  size="small" 
+                  className={`source-badge ${getSourceBadgeClass(paper.source)}`}
+                />
+              </Box>
+            </Box>
+          </Box>
+        </Grid>
+      ))
+    }
+  </Grid>
+</Box>
         {/* Newsletter Section with Improved Functionality */}
         <Box className="newsletter-section" sx={{ mt: 8, pb: 6 }}>
           <Paper

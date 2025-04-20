@@ -1,12 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import clsx from 'clsx';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import URLSITE from '../constant';
+import AuthContext from '../context/AuthContext';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
 const VerilogModuleEditor = () => {
+
+  const navigate = useNavigate()
+  const context = useContext(AuthContext);
+  useEffect(()=>{
+    if(!context.user) return;
+    if(context.user.email!="verigeektech@gmail.com"){
+      navigate('/')
+    }
+  },[context.user])
   const [activeTab, setActiveTab] = useState('overview');
 
   // Module info now includes moduleType ('free' or 'paid')

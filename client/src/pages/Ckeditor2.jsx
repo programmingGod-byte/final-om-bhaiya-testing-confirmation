@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,11 +10,21 @@ import 'highlight.js/styles/googlecode.css';
 
 // Import Verilog highlighting - make sure you have this installed
 import 'highlight.js/lib/languages/verilog';
+import AuthContext from '../context/AuthContext';
 
 // Register Verilog language with highlight.js
 hljs.registerLanguage('verilog', require('highlight.js/lib/languages/verilog'));
 
 const CourseContentTab = () => {
+  const navigate = useNavigate()
+  const context = useContext(AuthContext);
+  useEffect(()=>{
+    if(!context.user) return;
+    if(context.user.email!="verigeektech@gmail.com"){
+      navigate('/')
+    }
+  },[context.user])
+  
   const [modules, setModules] = useState([]);
   const navigator = useNavigate();
   const [selectedModuleId, setSelectedModuleId] = useState('');

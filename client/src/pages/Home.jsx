@@ -75,25 +75,25 @@ const Home = () => {
 
   const featuredModules = [
     {
-      id: `680473d60f5aeee456bde1ab`,
-      title: 'Verilog Fundamentals',
-      description: 'Master the basics of Verilog HDL and get started with digital design concepts',
-      image: 'https://i.ytimg.com/vi/Zgm3xvax_As/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDJDcB5wSTe8XXniL9w5pLAXjhvxg',
-      level: 'Beginner'
+      id: `6804e484d38b8b72116449fd`,
+      title: ' Assembly Language',
+      description: 'Master assembly language programming with this comprehensive course covering everything from basic concepts to advanced optimization techniques.',
+      image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/50dc2fb1a2f45a52dc239588b10efeedadd8633399353d538b8b8fe106df151f.jpg',
+      level: 'Intermediate'
     },
     {
       id: `6803ae22b6cba2e7c0581d05`,
       title: 'RISC-V Processor Design',
       description: 'Design a complete RISC-V processor from scratch with pipelining and hazard resolution',
-      image: 'https://tse1.mm.bing.net/th?id=OIP.T5X7UbWZedVZMHdzB9YPCQHaE8&pid=Api&P=0&h=180',
-      level: 'Expert'
+      image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/d492159c2ecb55f823944fb7dd698bf7928e91b2e44c4c0e2c151e10d1577d3b.png',
+      level: 'Advanced'
     },
     {
-      id: `68014ff9e6aae64fbd8d28d9`,
-      title: 'Foundations of Verilog: Building Blocks for Digital Design Excellence',
-      description: 'introduces the essential concepts and structures of Verilog, the hardware description language widely used in digital design',
-      image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/3db9ee014638d98a91bdc11ceec164bf85d8ff6c59f010e972dd2bb3b6214ea3.png',
-      level: 'Expert'
+      id: `680473d60f5aeee456bde1ab`,
+      title: 'Verilog Fundamentals',
+      description: 'Master the basics of Verilog HDL and start your journey in digital design with industry-relevant skills and knowledge for FPGA/ASIC careers',
+      image: 'https://om-bhaiya-testing.s3.ap-south-1.amazonaws.com/34bf516dc676ae457890d67b04e03068825b7a683e3d1d153129290e878aa7ee.jpeg',
+      level: 'Advanced '
     }
   ];
 
