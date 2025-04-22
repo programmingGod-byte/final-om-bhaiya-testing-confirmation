@@ -1,5 +1,7 @@
+import ReactPixel from 'react-facebook-pixel';
+
 import React, { useContext, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Box, CssBaseline } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import './styles/index.css';
@@ -66,6 +68,23 @@ const theme = createTheme({
 
 function App() {
   const context = useContext(AuthContext)
+
+  const location = useLocation(); // 👈 Add this
+
+  useEffect(() => {
+    const options = {
+      autoConfig: true,
+      debug: false,
+    };
+    ReactPixel.init('1328234808404265', undefined, options);
+    ReactPixel.pageView(); // Initial page load
+  }, []);
+
+  useEffect(() => {
+    ReactPixel.pageView(); // Track page view on route change
+  }, [location.pathname]);
+
+
   useEffect(() => {
     // Set document title
     document.title = 'VeriGeek - Empower Your Logic, Code Your Circuit!';
