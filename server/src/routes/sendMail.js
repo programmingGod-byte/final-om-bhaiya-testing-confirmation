@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Read template and replace placeholders
-function getHtmlTemplate(name, verifyLink) {
-  const filePath = path.join(__dirname, 'verifyEmail.html');
+function getHtmlTemplate(name, verifyLink,htmlTemplate="verifyEmail.html") {
+  const filePath = path.join(__dirname, htmlTemplate);
   let html = fs.readFileSync(filePath, 'utf-8');
   html = html.replace('{{name}}', name);
   html = html.replace('{{verifyLink}}', verifyLink);
@@ -12,7 +12,7 @@ function getHtmlTemplate(name, verifyLink) {
 }
 
 // Configure and send email
-async function sendVerificationEmail(toEmail, name, verifyLink) {
+async function sendVerificationEmail(toEmail, name, verifyLink,htmlTemplate="verifyEmail.html") {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -21,7 +21,7 @@ async function sendVerificationEmail(toEmail, name, verifyLink) {
     }
   });
 
-  const html = getHtmlTemplate(name, verifyLink);
+  const html = getHtmlTemplate(name, verifyLink,htmlTemplate);
   console.log(toEmail)
   const mailOptions = {
     from: 'verigeek <verigeektech@gmail.com>',

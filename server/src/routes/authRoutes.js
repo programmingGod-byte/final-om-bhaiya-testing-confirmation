@@ -78,7 +78,7 @@ router.post('/verify-email', async (req, res) => {
     }
 
      const authToken = user.getSignedJwtToken();
-  await deleteKey(`${token}`);
+  // await deleteKey(`${token}`);
 
     return res.status(200).json({ success: true, token: authToken,name:`${userId.firstName} ${userId.lastName}`,email:userId.email });
 

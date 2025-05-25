@@ -375,10 +375,12 @@ const Modules = () => {
                     {/* Module Type Badge (FREE/PAID) */}
                     <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
                       <Chip 
-                        label={module.moduleType === "free" ? "FREE" : "PAID"} 
+                        // label={module.moduleType === "free" ? "FREE" : "PAID"} 
+                        label={"FREE"}
                         size="small" 
                         sx={{ 
-                          backgroundColor: module.moduleType === "free" ? '#4caf50' : '#f44336',
+                          // backgroundColor: module.moduleType === "free" ? '#4caf50' : '#f44336',
+                          backgroundColor:'4caf50',
                           color: 'white',
                           fontWeight: 700,
                           fontSize: '0.75rem',
