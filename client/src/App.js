@@ -41,6 +41,7 @@ import BuyModule from './components/BuyModule';
 import About from "./pages/About"
 import Privacy from "./pages/Privacy"
 import Terms from "./pages/Terms"
+import VerifyToken from './pages/VerifyToken';
 // Switch manually for now
 const currentTheme = darkTheme;
 
@@ -130,6 +131,10 @@ function App() {
     {
       path: "/editor",
       element: <CodeEditor />,
+    },
+    {
+      path:"/verify/:token",
+      element:<VerifyToken/>
     },
     {
       path: "/modules/:moduleId/exercises/:exerciseId",

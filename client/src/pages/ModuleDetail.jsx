@@ -85,10 +85,10 @@ const ModuleDetail = () => {
   const [allUserData,setAllUserData] = useState(null)
   // Fetch module data
   function isModuleFreePaid(moduleID) {
-
-    if (!allUserData || !allUserData.paidModule) return false;
-    if(module.moduleType=="free") return true;
-    return allUserData.paidModule.some(module => module.moduleId === moduleID);
+      return true;
+    // if (!allUserData || !allUserData.paidModule) return false;
+    // if(module.moduleType=="free") return true;
+    // return allUserData.paidModule.some(module => module.moduleId === moduleID);
   }
 
   
