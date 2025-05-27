@@ -21,12 +21,33 @@
     <link rel="icon" href="%PUBLIC_URL%/images/BACKGROUNDLESS_LOGO.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#6a0dad" />
+    <!-- Preconnect and preload -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+  rel="stylesheet"
+  media="print"
+  onload="this.media='all'"
+/>
+<noscript>
+  <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    rel="stylesheet"
+  />
+</noscript>
+
     <meta
       name="description"
       content="VeriGeek - Empower Your Logic, Code Your Circuit! A comprehensive Verilog learning platform."
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/images/LOGO.png" />
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
 
     <!--
       manifest.json provides metadata used when your web app is installed on a
