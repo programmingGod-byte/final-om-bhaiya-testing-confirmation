@@ -14,6 +14,9 @@ const moduleRoutes = require('./src/routes/ModulesConf')
 const adminRoutes = require('./src/routes/adminRoutes')
 const generalRoute = require('./src/routes/generalRoute')
 const paymentRoute = require("./src/routes/payment")
+const { SitemapStream, streamToPromise } = require('sitemap');
+const { Readable } = require('stream');
+
 const app = express();
 
 app.use(express.json({ limit: '50mb' })); // for JSON payloads
@@ -51,10 +54,6 @@ app.use('/api/admin',adminRoutes)
 app.use('/api/payment',paymentRoute)
 app.use('/api/general',generalRoute)
 
-
-const { SitemapStream, streamToPromise } = require('sitemap');
-const { Readable } = require('stream');
-
 app.get('/sitemap.xml', async (req, res) => {
   try {
     const links = [
@@ -75,6 +74,7 @@ app.get('/sitemap.xml', async (req, res) => {
     res.status(500).end();
   }
 });
+
 
 
 if (process.env.NODE_ENV === 'production') {
