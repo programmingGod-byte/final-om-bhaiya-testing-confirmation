@@ -56,7 +56,49 @@ const theme = createTheme({
 });
 
 // Loader Fallback
-const Loader = () => <div style={{ padding: "2rem", textAlign: "center" }}>🔄 Loading...</div>;
+const Loader = () => {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-violet-100">
+      <div className="relative">
+        {/* Main loader container */}
+        <div className="relative w-20 h-20">
+          {/* Outer ring with subtle animation */}
+          <div className="absolute inset-0 rounded-full border-2 border-purple-200"></div>
+          
+          {/* Animated arc */}
+          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-purple-600 animate-spin"></div>
+          
+          {/* Inner subtle glow */}
+          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-purple-100 to-violet-50 shadow-inner"></div>
+          
+          {/* Center dot */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-2 h-2 bg-purple-700 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+        
+        {/* Clean loading text */}
+        <div className="mt-8 text-center">
+          <div className="text-purple-700 text-sm font-medium tracking-wide">
+            Loading
+            <span className="inline-flex ml-1">
+              <span className="animate-bounce" style={{ animationDelay: '0s' }}>.</span>
+              <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>.</span>
+              <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>.</span>
+            </span>
+          </div>
+        </div>
+        
+        {/* Progress indicator */}
+        <div className="mt-4 w-32 mx-auto">
+          <div className="h-1 bg-purple-200 rounded-full overflow-hidden">
+            <div className="h-full bg-purple-600 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function App() {
   const context = useContext(AuthContext);
