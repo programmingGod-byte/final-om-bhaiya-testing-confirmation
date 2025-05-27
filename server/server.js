@@ -51,6 +51,32 @@ app.use('/api/admin',adminRoutes)
 app.use('/api/payment',paymentRoute)
 app.use('/api/general',generalRoute)
 
+
+const { SitemapStream, streamToPromise } = require('sitemap');
+const { Readable } = require('stream');
+
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const links = [
+      { url: '/', changefreq: 'weekly', priority: 1.0 },
+      { url: '/modules', changefreq: 'weekly', priority: 0.8 },
+      { url: '/blog', changefreq: 'weekly', priority: 0.7 },
+      { url: '/contact', changefreq: 'monthly', priority: 0.5 },
+      // Add more static/dynamic URLs manually or from DB
+    ];
+
+    const stream = new SitemapStream({ hostname: 'https://www.verigeek.xyz' });
+    res.writeHead(200, { 'Content-Type': 'application/xml' });
+
+    const xml = await streamToPromise(Readable.from(links).pipe(stream)).then(data => data.toString());
+    res.end(xml);
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')));
 

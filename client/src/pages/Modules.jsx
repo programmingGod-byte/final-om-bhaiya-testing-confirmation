@@ -8,7 +8,7 @@ import {
 import { Search, FilterList } from '@mui/icons-material';
 import URLSITE from '../constant';
 import '../styles/Forum.css';
-
+import SEO from "./SEO"
 import {
   Add as AddIcon,
   ThumbUp as ThumbUpIcon,
@@ -155,6 +155,14 @@ const Modules = () => {
 
   return (
     <>
+
+     <SEO
+        title="Modules"
+        description="Explore our comprehensive modules on digital logic and circuit design."
+        url="https://www.verigeek.xyz/modules"
+      />
+
+      
     <Box className="forum-header">
               <Box sx={{ position: 'relative', zIndex: 1 }}>
                 <Container maxWidth="lg">

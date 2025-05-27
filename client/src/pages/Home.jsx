@@ -19,6 +19,8 @@ import { motion } from 'framer-motion';
 import Typewriter from 'typewriter-effect';
 import AnimatedFeatureIcon from "../components/AnimatedFeatureIcon.jsx"
 // Animation variants
+import SEO from "./SEO.js"
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -180,6 +182,13 @@ const Home = () => {
 endmodule`;
 
   return (
+    <>
+      <SEO
+        title="Home"
+        description="Learn logic, code your circuit at VeriGeek."
+        url="https://www.verigeek.xyz/"
+      />
+      
     <motion.div 
   className="container page-container"
   initial="hidden"
@@ -1259,6 +1268,7 @@ endmodule`;
         </div>
       </motion.div>
     </motion.div>
+    </>
   );
 };
 

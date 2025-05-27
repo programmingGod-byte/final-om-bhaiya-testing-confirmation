@@ -8,6 +8,9 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+// index.js or main entry
+import { HelmetProvider } from 'react-helmet-async';
+
 
 
 
@@ -20,8 +23,10 @@ root.render(
     <BrowserRouter>
         <AuthProvider>
         <GoogleOAuthProvider clientId="245508046927-i95br0nl17o19smq8f36f0fu0f61e2jq.apps.googleusercontent.com">
+<HelmetProvider>
 
           <App />
+</HelmetProvider>
         </GoogleOAuthProvider>
         </AuthProvider>
       
