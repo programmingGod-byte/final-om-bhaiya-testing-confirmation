@@ -42,6 +42,7 @@ import About from "./pages/About"
 import Privacy from "./pages/Privacy"
 import Terms from "./pages/Terms"
 import VerifyToken from './pages/VerifyToken';
+import ForgotPassword from './pages/ForgotPassword';
 // Switch manually for now
 const currentTheme = darkTheme;
 
@@ -131,6 +132,10 @@ function App() {
     {
       path: "/editor",
       element: <CodeEditor />,
+    },
+    {
+      path:"/forgot-password",
+      element:<ForgotPassword/>
     },
     {
       path:"/verify/:token",

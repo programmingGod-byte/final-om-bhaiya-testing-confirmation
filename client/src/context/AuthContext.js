@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Check if user is stored in localStorage
     
-     const isVerifyRoute = location.pathname.startsWith('/verify');
+     const isVerifyRoute = location.pathname.startsWith('/verify') || location.pathname.startsWith('/forgot-password');
 
     // Skip auth check for verify or public routes
     if (isVerifyRoute) return;

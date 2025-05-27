@@ -9,6 +9,12 @@ const JWT_SECRET = process.env.JWT_SECRET
 const {sendVerificationEmail} = require("./sendMail")
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const { 
+    sendVerificationForgetEmail, // aliasing
+    sendVerificationCodeEmail, 
+    sendForgotPasswordEmail,
+    generateVerificationCode 
+} = require("./sendForgetPasswordMail");
 
 const hashPassword = async (plainPassword) => {
   const saltRounds = 10;
@@ -184,5 +190,106 @@ router.post('/google', async (req, res) => {
     res.status(401).json({ success: false, message: 'Google token verification failed' });
   }
 });
+
+
+
+
+
+// forgetPassword
+
+router.post("/forgot-password",async (req,res)=>{
+  const {email} = req.body;
+  let user = await User.findOne({email:email})
+  if(!user){
+    return res.json({
+      success:false,
+      message:"the email does not exist"
+    })
+  }
+  let code = generateVerificationCode()
+  setWithTTL(JSON.stringify({
+    code:code,
+    email:email
+  }),code,1800)
+
+  sendVerificationForgetEmail(email,user.name,code)
+
+  res.json({
+    success:true,
+    message:"mail sent"
+  })  
+
+
+})
+
+
+
+
+
+
+router.post("/verify-code",async (req,res)=>{
+  const {email,code} = req.body;
+  let user = await User.findOne({email:email})
+  if(!user){
+    return res.json({
+      success:true,
+      message:"the email does not exist"
+    })
+  }
+  let getVal = await getValue(JSON.stringify({
+    code:code,
+    email:email
+  }))
+
+  if(getVal==null){
+return res.json({
+      success:false,
+      message:"code verifcation failed"
+    })
+  }
+  if(getVal.toString()==code){
+    return res.json({
+      success:true,
+      message:"code verifcation succeed"
+    })
+  }
+  console.log(getVal)
+  
+
+ return  res.json({
+    success:false,
+    message:"code does not match"
+  })  
+
+
+})
+
+
+router.post("/update-password",async (req,res)=>{
+  const {email,password} = req.body;
+  let user = await User.findOne({email:email})
+  if(!user){
+    return res.json({
+      success:true,
+      message:"the email does not exist"
+    })
+  }
+  let hashPass = await hashPassword(password)
+  await User.updateOne(
+  { email: email},
+  { $set: { password: hashPass } }
+);
+
+
+  
+
+ return  res.json({
+    success:true,
+    message:"password updated succesfully"
+  })  
+
+
+})
+
 
 module.exports = router;
