@@ -24,7 +24,7 @@ import { getModuleById } from '../data/modules';
 import { getModuleProgress, initializeProgressData } from '../utils/progressTracker';
 import URLSITE from '../constant';
 import AuthContext from '../context/AuthContext';
-
+import SEO from "./SEO"
 
 
 const OverviewText = ({ text }) => {
@@ -92,8 +92,6 @@ const ModuleDetail = () => {
   }
 
   
-      
-
     useEffect(() => {
       document.querySelectorAll('pre code').forEach((block) => {
         hljs.highlightBlock(block);
@@ -261,6 +259,12 @@ const handleTabChange = (event, newValue) => {
   const continueChapterId = firstUncompletedChapter ? firstUncompletedChapter.id : 1;
 
   return (
+    <>
+
+    {
+      module && <SEO title={module?.title} description={module?.description} url={"verigeek.xyz"}></SEO>
+    }
+    
     <Box className="container page-container">
       {/* Breadcrumb */}
       <Breadcrumbs sx={{ mb: 2 }}>
@@ -1026,6 +1030,7 @@ const handleTabChange = (event, newValue) => {
         message={snackbarMessage}
       />
     </Box>
+    </>
   );
 };
 

@@ -19,7 +19,7 @@ import { getChapterProgress, updateChapterProgress } from '../utils/progressTrac
 import URLSITE from '../constant';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/googlecode.css';
-
+import SEO from "./SEO"
 // Import Verilog highlighting - make sure you have this installed
 import 'highlight.js/lib/languages/verilog';
 import AuthContext from '../context/AuthContext';
@@ -497,6 +497,12 @@ const ChapterView = () => {
 
   return (
     <>
+    {
+      chapter && editedChapterDescription && <SEO 
+      title={chapter?.title} description={editedChapterDescription || ""} 
+      url={"verigeek.xyz"}
+      />
+    }
       {/* Drawer for chapter navigation */}
       <Drawer
         anchor="left"

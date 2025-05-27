@@ -300,6 +300,7 @@ endmodule`;
           component={motion.img}
           src="/images/BACKGROUNDLESS_LOGO.png" 
           alt="VeriGeek Logo" 
+          loading='lazy'
           sx={{ 
             height: 60, 
             mr: 2,
@@ -583,6 +584,7 @@ endmodule`;
                   <motion.img
                     className="w-full h-48 object-cover"
                     src={module.image}
+                    loading='lazy'
                     alt={module.title}
                     whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.3 }}
@@ -709,6 +711,7 @@ endmodule`;
               transition={{ duration: 0.3 }}
             >
               <img
+              loading='lazy'
                 src={module.image}
                 alt={module.title}
                 className="w-full h-full object-cover"

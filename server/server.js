@@ -16,6 +16,7 @@ const generalRoute = require('./src/routes/generalRoute')
 const paymentRoute = require("./src/routes/payment")
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { Readable } = require('stream');
+const compression = require('compression');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
+app.use(compression());
 
 // Serve static files
 app.use('/images', express.static(path.join(__dirname, '../public/images')));

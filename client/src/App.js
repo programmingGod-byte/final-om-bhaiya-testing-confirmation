@@ -1,235 +1,127 @@
-import ReactPixel from 'react-facebook-pixel';
-
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { Box, CssBaseline } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import ReactPixel from 'react-facebook-pixel';
+
 import './styles/index.css';
-import './styles/ck-editorstyles.css'
-// Import pages
-import Home from './pages/Home';
-import Modules from './pages/Modules';
-import ModuleDetail from './pages/ModuleDetail';
-import ChapterView from './pages/ChapterView';
-import CodeEditor from './pages/CodeEditor';
-import Forum from './pages/Forum';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Resources from './pages/Resources';
-import Careers from './pages/Careers';
-import Blog from './pages/Blog';
-import SingleBlog from './pages/SingleBlog';
-import CommunityForum from './components/CommunityForum';
-import Research from './pages/Research';
-import Contact from './pages/Contact';
-import ResearchPaperWriter from "./pages/ResearchPaperWriter"
-// Import components
+import './styles/ck-editorstyles.css';
+
 import Header from './components/Header';
 import Footer from './components/Footer';
-import FileUploader from './components/FileUpload';
-// index.js
-import { darkTheme, lightTheme } from './styles/theme';
-import WorkSpaceCodeEditor from './pages/WorkSpaceCodeEditor';
-import WorkSpace from './pages/workSpace';
-import CKEditorWithJson from './pages/Ckeditor';
-import ModuleChapterEditor from './pages/Ckeditor2';
-import BlogWriter from './pages/BlogWriter';
-import UserProfile from './pages/ProfilePage';
-import PricingPage from './pages/PricingPage';
 import AuthContext from './context/AuthContext';
-import BuyModule from './components/BuyModule';
-import About from "./pages/About"
-import Privacy from "./pages/Privacy"
-import Terms from "./pages/Terms"
-import VerifyToken from './pages/VerifyToken';
-import ForgotPassword from './pages/ForgotPassword';
-// Switch manually for now
-const currentTheme = darkTheme;
+import { darkTheme, lightTheme } from './styles/theme';
 
+// Lazy load all pages
+const Home = lazy(() => import('./pages/Home'));
+const Modules = lazy(() => import('./pages/Modules'));
+const ModuleDetail = lazy(() => import('./pages/ModuleDetail'));
+const ChapterView = lazy(() => import('./pages/ChapterView'));
+const CodeEditor = lazy(() => import('./pages/CodeEditor'));
+const Forum = lazy(() => import('./pages/Forum'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Resources = lazy(() => import('./pages/Resources'));
+const Careers = lazy(() => import('./pages/Careers'));
+const Blog = lazy(() => import('./pages/Blog'));
+const SingleBlog = lazy(() => import('./pages/SingleBlog'));
+const CommunityForum = lazy(() => import('./components/CommunityForum'));
+const Research = lazy(() => import('./pages/Research'));
+const Contact = lazy(() => import('./pages/Contact'));
+const ResearchPaperWriter = lazy(() => import('./pages/ResearchPaperWriter'));
+const FileUploader = lazy(() => import('./components/FileUpload'));
+const WorkSpaceCodeEditor = lazy(() => import('./pages/WorkSpaceCodeEditor'));
+const WorkSpace = lazy(() => import('./pages/workSpace'));
+const CKEditorWithJson = lazy(() => import('./pages/Ckeditor'));
+const ModuleChapterEditor = lazy(() => import('./pages/Ckeditor2'));
+const BlogWriter = lazy(() => import('./pages/BlogWriter'));
+const UserProfile = lazy(() => import('./pages/ProfilePage'));
+const PricingPage = lazy(() => import('./pages/PricingPage'));
+const BuyModule = lazy(() => import('./components/BuyModule'));
+const About = lazy(() => import('./pages/About'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const VerifyToken = lazy(() => import('./pages/VerifyToken'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 
-
-
-// Create a theme with our purple color
+// Theme setup
 const theme = createTheme({
   palette: {
-    primary: {
-      main: '#6a0dad',
-    },
-    secondary: {
-      main: '#f50057',
-    },
+    primary: { main: '#6a0dad' },
+    secondary: { main: '#f50057' },
   },
   typography: {
-    fontFamily: [
-      'Roboto',
-      'Arial',
-      'sans-serif',
-    ].join(','),
+    fontFamily: ['Roboto', 'Arial', 'sans-serif'].join(','),
   },
 });
 
-function App() {
-  const context = useContext(AuthContext)
+// Loader Fallback
+const Loader = () => <div style={{ padding: "2rem", textAlign: "center" }}>🔄 Loading...</div>;
 
-  const location = useLocation(); // 👈 Add this
+function App() {
+  const context = useContext(AuthContext);
+  const location = useLocation();
 
   useEffect(() => {
-    const options = {
-      autoConfig: true,
-      debug: false,
-    };
-    ReactPixel.init('1328234808404265', undefined, options);
-    ReactPixel.pageView(); // Initial page load
+    ReactPixel.init('1328234808404265', undefined, { autoConfig: true, debug: false });
+    ReactPixel.pageView(); // Initial load
   }, []);
 
   useEffect(() => {
-    ReactPixel.pageView(); // Track page view on route change
+    ReactPixel.pageView(); // On route change
   }, [location.pathname]);
 
-
   useEffect(() => {
-    // Set document title
     document.title = 'VeriGeek - Empower Your Logic, Code Your Circuit!';
   }, []);
 
   const routes = [
-    {
-      path: "/",
-      element: <Home />,
-    },
-    {
-      path:"/ckeditor",
-      element:<CKEditorWithJson/>
-    },
-    {
-      path:"/ckeditor2",
-      element:<ModuleChapterEditor/>
-    },
-    {
-      path: "/modules",
-      element: <Modules />,
-    },
-    {
-      path:"/workspace",
-      element:<WorkSpace/>
-    },
-    {
-      path:"/workspaceEditor/:projectId",
-      element:<WorkSpaceCodeEditor/>
-    },
-    {
-      path: "/modules/:id",
-      element: <ModuleDetail />,
-    },
-    {
-      path: "/buy-module/:id",
-      element: <BuyModule />,
-    },
-    {
-      path: "/modules/:moduleId/chapters/:chapterId",
-      element: <ChapterView />,
-    },
-    {
-      path: "/editor",
-      element: <CodeEditor />,
-    },
-    {
-      path:"/forgot-password",
-      element:<ForgotPassword/>
-    },
-    {
-      path:"/verify/:token",
-      element:<VerifyToken/>
-    },
-    {
-      path: "/modules/:moduleId/exercises/:exerciseId",
-      element: <CodeEditor />,
-    },
-    {
-      path: "/forum",
-      element: <CommunityForum />,
-    },
-    {
-      path: "/resources",
-      element: <Resources />,
-    },
-    {
-      path: "/careers",
-      element: <Careers />,
-    },
-    {
-      path: "/login",
-      element: <Login />,
-    },
-    {
-      path: "/register",
-      element: <Register />,
-    },
-    {
-      path: "/blog",
-      element: <Blog />,
-    },
-    {
-      path: "/blog/:id",
-      element: <SingleBlog />,
-    },
-    {
-      path: "/research",
-      element: <Research />,
-    },
-    {
-      path: "/contact",
-      element: <Contact />,
-    },
-    {
-      path:"/allResearchTopics",
-      element:<ResearchPaperWriter/>
-    },
-    {
-      path:"/advanceBlogWriter",
-      element:<BlogWriter/>
-    },
-    {
-      path:"/qfileuploaderchecker",
-      element:<FileUploader/>
-    },
-    {
-      path:"/profile",
-      element:<UserProfile/>
-    },
-    {
-      path:"/pricing",
-      element:<PricingPage/>
-    },
-    {
-      path:"/about",
-      element:<About/>
-    },
-    {
-      path:"/privacy",
-      element:<Privacy/>
-    },
-    {
-      path:"/terms",
-      element:<Terms/>
-    },
-    {
-      path: "*",
-      element: <Home />,
-    },
+    { path: "/", element: <Home /> },
+    { path: "/ckeditor", element: <CKEditorWithJson /> },
+    { path: "/ckeditor2", element: <ModuleChapterEditor /> },
+    { path: "/modules", element: <Modules /> },
+    { path: "/workspace", element: <WorkSpace /> },
+    { path: "/workspaceEditor/:projectId", element: <WorkSpaceCodeEditor /> },
+    { path: "/modules/:id", element: <ModuleDetail /> },
+    { path: "/buy-module/:id", element: <BuyModule /> },
+    { path: "/modules/:moduleId/chapters/:chapterId", element: <ChapterView /> },
+    { path: "/editor", element: <CodeEditor /> },
+    { path: "/forgot-password", element: <ForgotPassword /> },
+    { path: "/verify/:token", element: <VerifyToken /> },
+    { path: "/modules/:moduleId/exercises/:exerciseId", element: <CodeEditor /> },
+    { path: "/forum", element: <CommunityForum /> },
+    { path: "/resources", element: <Resources /> },
+    { path: "/careers", element: <Careers /> },
+    { path: "/login", element: <Login /> },
+    { path: "/register", element: <Register /> },
+    { path: "/blog", element: <Blog /> },
+    { path: "/blog/:id", element: <SingleBlog /> },
+    { path: "/research", element: <Research /> },
+    { path: "/contact", element: <Contact /> },
+    { path: "/allResearchTopics", element: <ResearchPaperWriter /> },
+    { path: "/advanceBlogWriter", element: <BlogWriter /> },
+    { path: "/qfileuploaderchecker", element: <FileUploader /> },
+    { path: "/profile", element: <UserProfile /> },
+    { path: "/pricing", element: <PricingPage /> },
+    { path: "/about", element: <About /> },
+    { path: "/privacy", element: <Privacy /> },
+    { path: "/terms", element: <Terms /> },
+    { path: "*", element: <Home /> },
   ];
 
   return (
-    <ThemeProvider theme={context.colorMode == "light" ? lightTheme :darkTheme}>
+    <ThemeProvider theme={context.colorMode === "light" ? lightTheme : darkTheme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />
         <Box component="main" sx={{ flexGrow: 1 }}>
-          <Routes>
-            {routes.map((route, index) => (
-              <Route key={index} path={route.path} element={route.element} />
-            ))}
-          </Routes>
+          <Suspense fallback={<Loader />}>
+            <Routes>
+              {routes.map((route, index) => (
+                <Route key={index} path={route.path} element={route.element} />
+              ))}
+            </Routes>
+          </Suspense>
         </Box>
         <Footer />
       </Box>
@@ -237,4 +129,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
