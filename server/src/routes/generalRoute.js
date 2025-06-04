@@ -8,7 +8,8 @@ const User = require("../models/User")
 const { routes } = require('../../server');
 // GET /api/admin/research-papers
 const Chapter = require("../models/Chapters");
-const PostQuestion = require("../models/PostQuestion")
+const PostQuestion = require("../models/PostQuestion");
+const CourseContentModel = require('../models/Chapters');
 // Returns all research papers in JSON
 
 
@@ -229,5 +230,34 @@ router.get('/blogs', async (req, res) => {
       res.status(500).json({ error: 'Server error' });
     }
   });
+
+
+
+  router.put('/updatechapter/:id', async (req, res) => {
+  const { id } = req.params;
+  const { editorContent, isNewEditorUsed } = req.body;
+    console.log("update chaptr")
+    console.log(editorContent)
+  try {
+    const updatedChapter = await CourseContentModel.findByIdAndUpdate(
+      id,
+      {
+        editorContent,
+        isNewEditorUsed,
+      },
+      { new: true } // returns the updated document
+    );
+
+    if (!updatedChapter) {
+      return res.status(404).json({ message: 'Chapter not found' });
+    }
+
+    res.status(200).json({ message: 'Chapter updated successfully', chapter: updatedChapter });
+  } catch (error) {
+    console.error('Error updating chapter:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
   
 module.exports = router;

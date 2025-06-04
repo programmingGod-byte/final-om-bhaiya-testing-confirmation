@@ -5,15 +5,15 @@ const { Schema } = mongoose;
 const SectionSchema = new Schema({
   id: {
     type: String,
-    required: true,
+   
   },
   title: {
     type: String,
-    required: true,
+   
   },
   content: {
     type: String,
-    required: true,
+   
   },
 });
 
@@ -43,11 +43,27 @@ const CourseContentSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  editorContent:{
+    type:String,
+    default:""
+  },
   codeExamples:{
     type:[],
     default:[]
   },
-  sections: [SectionSchema], // Array of sections
+  isNewEditorUsed:{
+    default:false,
+    type:Boolean
+  }
+  ,
+  sections: {
+    type:[SectionSchema],
+    default:[{
+      id:"",
+      title:"",
+      content:""
+    }]
+  }, // Array of sections
 }, { timestamps: true });
 
 // Creating the model for the course content

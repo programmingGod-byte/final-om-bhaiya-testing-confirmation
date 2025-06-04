@@ -452,7 +452,7 @@ ${block.code}
                     </div>
 
                     <div className="p-6 h-full overflow-y-auto">
-                      <RichTextEditor setEditorContent={setEditorContent}/>
+                      <RichTextEditor setEditorContent={setEditorContent} editorContent={editorContent}/>
                     </div>
                   </div>
                 </div>

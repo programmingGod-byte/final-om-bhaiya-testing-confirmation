@@ -141,7 +141,7 @@ const CustomTable = Table.extend({
     // Remove the renderHTML method completely
 });
 
-const RichTextEditor = ({ editorContent,setEditorContent,customEditContent = null, setCustomEditContent = null }) => {
+const RichTextEditorForEditing = ({ editorContent,setEditorContent,customEditContent = null, setCustomEditContent = null }) => {
     const fileInputRef = useRef();
     const [fontSize, setFontSize] = useState(16);
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -228,7 +228,9 @@ const RichTextEditor = ({ editorContent,setEditorContent,customEditContent = nul
 
         // Hook into editor changes here
         onUpdate: ({ editor }) => {
+            console.log("chages occured")
             const html = editor.getHTML();
+            console.log(html)
             setEditorContent(html);
         },
         onCreate: ({ editor }) => {
@@ -1019,4 +1021,4 @@ const RichTextEditor = ({ editorContent,setEditorContent,customEditContent = nul
     );
 };
 
-export default RichTextEditor;
+export default RichTextEditorForEditing;

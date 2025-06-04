@@ -16,8 +16,9 @@ const generalRoute = require('./src/routes/generalRoute')
 const paymentRoute = require("./src/routes/payment")
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { Readable } = require('stream');
+const Course = require('./src/models/ModuleSchema'); // Adjust path as needed
 const compression = require('compression');
-
+const {updateAllCourseContents} = require('./src/controllers/courseMerge')
 const app = express();
 
 app.use(express.json({ limit: '50mb' })); // for JSON payloads
@@ -57,26 +58,82 @@ app.use('/api/payment',paymentRoute)
 app.use('/api/general',generalRoute)
 
 app.get('/sitemap.xml', async (req, res) => {
+  // updateAllCourseContents()
   try {
-    const links = [
-      { url: '/', changefreq: 'weekly', priority: 1.0 },
-      { url: '/modules', changefreq: 'weekly', priority: 0.8 },
-      { url: '/blog', changefreq: 'weekly', priority: 0.7 },
-      { url: '/contact', changefreq: 'monthly', priority: 0.5 },
-      // Add more static/dynamic URLs manually or from DB
+    // 1. Get all course IDs with updatedAt for lastmod
+    const courses = await Course.find(
+      { _id: { $exists: true, $ne: null } }, 
+      '_id updatedAt'
+    ).lean();
+    console.log(`Found ${courses.length} courses for sitemap`);
+    
+    // 2. Static routes with lastmod
+    const staticLinks = [
+      { url: '/', changefreq: 'weekly', priority: 1.0, lastmod: new Date().toISOString() },
+      { url: '/modules', changefreq: 'weekly', priority: 0.8, lastmod: new Date().toISOString() },
+      { url: '/blog', changefreq: 'weekly', priority: 0.7, lastmod: new Date().toISOString() },
+      { url: '/contact', changefreq: 'monthly', priority: 0.5, lastmod: new Date().toISOString() },
     ];
-
+    
+    // 3. Dynamic course/module links with proper validation and lastmod
+    const moduleLinks = courses
+      .filter(course => course && course._id) // Ensure course exists and has _id
+      .map(course => {
+        const courseId = course._id.toString();
+        // Strict validation - must be a valid MongoDB ObjectId format
+        if (!courseId || 
+            courseId === 'undefined' || 
+            courseId === 'null' || 
+            courseId.length !== 24 || 
+            !/^[0-9a-fA-F]{24}$/.test(courseId)) {
+          console.warn('Invalid course ID found:', course);
+          return null;
+        }
+        return {
+          url: `/modules/${courseId}`,
+          changefreq: 'weekly',
+          priority: 0.9,
+          lastmod: new Date().toISOString(), // Use current date for simplicity
+        };
+      })
+      .filter(link => link !== null); // Remove any null entries
+    
+    console.log(`Generated ${moduleLinks.length} valid module links`);
+    
+    // 4. Additional validation before combining
+    const validModuleLinks = moduleLinks.filter(link => 
+      link && 
+      link.url && 
+      link.url.length > 0 && 
+      !link.url.includes('undefined') &&
+      !link.url.includes('null')
+    );
+    
+    if (validModuleLinks.length !== moduleLinks.length) {
+      console.warn(`Filtered out ${moduleLinks.length - validModuleLinks.length} invalid module links`);
+    }
+    
+    // 5. Combine all links
+    const allLinks = [...staticLinks, ...validModuleLinks];
+    
+    console.log(`Total sitemap entries: ${allLinks.length}`);
+    
+    // 6. Set header and generate XML
+    res.writeHead(200, {
+      'Content-Type': 'application/xml',
+    });
+    
     const stream = new SitemapStream({ hostname: 'https://www.verigeek.xyz' });
-    res.writeHead(200, { 'Content-Type': 'application/xml' });
-
-    const xml = await streamToPromise(Readable.from(links).pipe(stream)).then(data => data.toString());
+    const xml = await streamToPromise(Readable.from(allLinks).pipe(stream)).then(data =>
+      data.toString()
+    );
+    
     res.end(xml);
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error('Sitemap generation failed:', error);
     res.status(500).end();
   }
 });
-
 
 
 if (process.env.NODE_ENV === 'production') {
