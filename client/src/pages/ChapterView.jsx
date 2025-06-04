@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import DOMPurify from 'dompurify';
+
+
 import axios from "axios";
 import { 
   Box, Typography, Button, Breadcrumbs, Paper, CircularProgress,
   Divider, IconButton, Drawer, List, ListItem, ListItemText,
-  Snackbar, Alert, Chip, TextField, InputAdornment
+  Snackbar, Alert, Chip
 } from '@mui/material';
 import { 
   ArrowBack, MenuBook, Menu, NavigateBefore, NavigateNext,
-  BookmarkBorder, Bookmark, CheckCircle, Save, Edit, Cancel,
-  Title as TitleIcon, Code as CodeIcon
+  BookmarkBorder, Bookmark, CheckCircle
 } from '@mui/icons-material';
 
 // Import the module data and the ChapterContent component
@@ -18,7 +20,10 @@ import ChapterContent from '../components/ChapterContent';
 import { getChapterProgress, updateChapterProgress } from '../utils/progressTracker';
 import URLSITE from '../constant';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/googlecode.css';
+// import 'highlight.js/styles/googlecode.css'
+// import 'highlight.js/styles/';
+import 'highlight.js/styles/atom-one-dark.css';
+
 import SEO from "./SEO"
 // Import Verilog highlighting - make sure you have this installed
 import 'highlight.js/lib/languages/verilog';
@@ -49,26 +54,6 @@ const ChapterView = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [progress, setProgress] = useState(null);
   const context = useContext(AuthContext);
-  
-  // New state for handling editable sections
-  const [isEditing, setIsEditing] = useState(false);
-  const [saveLoading, setSaveLoading] = useState(false);
-  const sectionRefs = useRef({});
-  const sectionTitleRefs = useRef({});
-  const codeExampleRefs = useRef({});
-  
-  // State for edited content
-  const [editedSections, setEditedSections] = useState([]);
-  const [editedCodeExamples, setEditedCodeExamples] = useState([]);
-  const [editedChapterTitle, setEditedChapterTitle] = useState("");
-  const [editedChapterDescription, setEditedChapterDescription] = useState("");
-
-  // Clear refs when toggling edit mode or when chapter changes
-  useEffect(() => {
-    sectionRefs.current = {};
-    sectionTitleRefs.current = {};
-    codeExampleRefs.current = {};
-  }, [isEditing, chapterId]);
 
   const navigateToNextChapter = () => {
     if (!context?.currentModule?.chapters) return;
@@ -137,7 +122,7 @@ const ChapterView = () => {
     if (!loading) {
       applyHighlighting();
     }
-  }, [loading, isEditing, chapterContent]);
+  }, [loading, chapterContent]);
 
   // Fetch module and chapter data
   useEffect(() => {
@@ -157,10 +142,8 @@ const ChapterView = () => {
         try {
           const response = await axios.get(`${URLSITE}/api/general/chapter/${chapterId}`);
           const data = response.data;
-          
+          console.log(data)
           setChapterContent(data);
-          setEditedChapterTitle(data.title || "");
-          setEditedChapterDescription(data.description || "");
           
           // Set chapter basic info
           setChapter({
@@ -290,176 +273,6 @@ const ChapterView = () => {
       showSnackbar('You need to score at least 70% to complete this chapter.', 'warning');
     }
   };
-
-  // Handle enabling editing mode
-  const handleEnableEditing = () => {
-    if (!chapterContent) return;
-    
-    setIsEditing(true);
-    
-    // Initialize with current values
-    setEditedChapterTitle(chapterContent.title || "");
-    setEditedChapterDescription(chapterContent.description || "");
-    
-    if (chapterContent.sections) {
-      setEditedSections([...chapterContent.sections]);
-    } else {
-      setEditedSections([]);
-    }
-    
-    if (chapterContent.codeExamples) {
-      setEditedCodeExamples([...chapterContent.codeExamples]);
-    } else {
-      setEditedCodeExamples([]);
-    }
-  };
-
-  // Handle section title change
-  const handleSectionTitleChange = (sectionId, newTitle) => {
-    setEditedSections(prevSections => 
-      prevSections.map(section => 
-        section.id === sectionId ? { ...section, title: newTitle } : section
-      )
-    );
-  };
-
-  // Handle code example changes
-  const handleCodeExampleChange = (exampleId, field, value) => {
-    setEditedCodeExamples(prevExamples => 
-      prevExamples.map(example => 
-        example.id === exampleId ? { ...example, [field]: value } : example
-      )
-    );
-  };
-
-  // Handle cancelling editing mode
-  const handleCancelEditing = () => {
-    setIsEditing(false);
-    setEditedSections([]);
-    setEditedCodeExamples([]);
-    setEditedChapterTitle("");
-    setEditedChapterDescription("");
-  };
-
-  // Handle section content change - improved version
-  const handleSectionContentChange = (sectionId) => {
-    if (!sectionRefs.current[sectionId]) return;
-    
-    const updatedContent = sectionRefs.current[sectionId].innerHTML;
-    
-    // Find the section to update
-    setEditedSections(prevSections => 
-      prevSections.map(section => 
-        section.id === sectionId ? { ...section, content: updatedContent } : section
-      )
-    );
-  };
-
-  // Set up event listeners for all editable sections
-  useEffect(() => {
-    if (!isEditing || !chapterContent?.sections) return;
-    
-    // Create event listeners for all sections
-    const listeners = {};
-    
-    chapterContent.sections.forEach(section => {
-      const sectionId = section.id;
-      if (sectionRefs.current[sectionId]) {
-        const handleInput = () => handleSectionContentChange(sectionId);
-        sectionRefs.current[sectionId].addEventListener('input', handleInput);
-        listeners[sectionId] = handleInput;
-      }
-    });
-    
-    // Clean up listeners when component unmounts or editing state changes
-    return () => {
-      Object.entries(listeners).forEach(([sectionId, listener]) => {
-        if (sectionRefs.current[sectionId]) {
-          sectionRefs.current[sectionId].removeEventListener('input', listener);
-        }
-      });
-    };
-  }, [isEditing, chapterContent?.sections]);
-
-  // Improved handle save changes function
-  const handleSaveChanges = async () => {
-    if (!chapterContent) return;
-    
-    setSaveLoading(true);
-    
-    try {
-      // First, get the latest content from all section refs
-      const sectionsToUpdate = chapterContent.sections?.map(section => {
-        const sectionElement = sectionRefs.current[section.id];
-        const updatedContent = sectionElement ? sectionElement.innerHTML : section.content || "";
-        
-        // Look for any edited section title in the edited sections state
-        const editedSection = editedSections.find(s => s.id === section.id);
-        const updatedTitle = editedSection?.title || section.title || "";
-        
-        return {
-          ...section,
-          title: updatedTitle,
-          content: updatedContent
-        };
-      }) || [];
-      
-      // Get updated code examples
-      const codeExamplesToUpdate = chapterContent.codeExamples?.map(example => {
-        const codeElement = codeExampleRefs.current[`${example.id}-code`];
-        const updatedCode = codeElement ? codeElement.textContent : example.code || "";
-        
-        // Find any edited fields from the state
-        const editedExample = editedCodeExamples.find(e => e.id === example.id);
-        
-        return {
-          ...example,
-          title: editedExample?.title || example.title || "",
-          description: editedExample?.description || example.description || "",
-          explanation: editedExample?.explanation || example.explanation || "",
-          code: updatedCode,
-          language: editedExample?.language || example.language || ""
-        };
-      }) || [];
-      
-      // Create the updated chapter content object
-      const updatedChapterContent = {
-        ...chapterContent,
-        title: editedChapterTitle,
-        description: editedChapterDescription,
-        sections: sectionsToUpdate,
-        codeExamples: codeExamplesToUpdate
-      };
-      
-      // Debug log to see what we're sending
-      console.log("Saving updated content:", updatedChapterContent);
-      
-      // Send update request to the server
-      const response = await axios.post(
-        `${URLSITE}/api/general/update-chapter`,
-        updatedChapterContent,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      
-      if (response.status === 200) {
-        // Update local state with the new content
-        setChapterContent(updatedChapterContent);
-        setIsEditing(false);
-        showSnackbar('Chapter content updated successfully!', 'success');
-      } else {
-        throw new Error('Failed to update chapter content');
-      }
-    } catch (error) {
-      console.error('Error saving chapter content:', error);
-      showSnackbar('Failed to save changes. Please try again.', 'error');
-    } finally {
-      setSaveLoading(false);
-    }
-  };
   
   // Render loading state
   if (loading) {
@@ -489,20 +302,17 @@ const ChapterView = () => {
     module.chapters.findIndex(ch => ch.id === parseInt(chapterId, 10)) : -1;
   const isFirstChapter = currentIndex === 0;
   const isLastChapter = currentIndex === (module.chapters?.length - 1) || currentIndex === -1;
-  const prevChapter = !isFirstChapter && currentIndex !== -1 ? module.chapters[currentIndex - 1] : null;
-  const nextChapter = !isLastChapter && currentIndex !== -1 ? module.chapters[currentIndex + 1] : null;
-
-  // Check if user has admin rights
-  const isAdmin = context?.user?.email === 'verigeektech@gmail.com';
 
   return (
     <>
-    {
-      chapter && editedChapterDescription && <SEO 
-      title={chapter?.title} description={editedChapterDescription || ""} 
-      url={"verigeek.xyz"}
-      />
-    }
+      {chapter && chapterContent?.description && (
+        <SEO 
+          title={chapter?.title} 
+          description={chapterContent?.description || ""} 
+          url={"verigeek.xyz"}
+        />
+      )}
+      
       {/* Drawer for chapter navigation */}
       <Drawer
         anchor="left"
@@ -595,7 +405,7 @@ const ChapterView = () => {
             <MenuBook sx={{ mr: 1, color: 'primary.main' }} />
             <Typography variant="subtitle1">
               Chapter {chapter?.title}
-              {isChapterCompleted && !isEditing && (
+              {isChapterCompleted && (
                 <Chip 
                   size="small" 
                   icon={<CheckCircle />} 
@@ -607,64 +417,24 @@ const ChapterView = () => {
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
-            {/* Admin editing buttons */}
-            {isAdmin && !isEditing && (
+            {!isChapterCompleted && (
               <Button
                 variant="outlined"
                 size="small"
-                startIcon={<Edit />}
-                onClick={handleEnableEditing}
+                startIcon={<CheckCircle />}
+                onClick={markChapterCompleted}
               >
-                Edit Content
+                Mark as Completed
               </Button>
             )}
-            
-            {isEditing && (
-              <>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  color="error"
-                  startIcon={<Cancel />}
-                  onClick={handleCancelEditing}
-                >
-                  Cancel Editing
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  color="primary"
-                  startIcon={<Save />}
-                  onClick={handleSaveChanges}
-                  disabled={saveLoading}
-                >
-                  {saveLoading ? 'Saving...' : 'Save Changes'}
-                </Button>
-              </>
-            )}
-            
-            {!isEditing && (
-              <>
-                {!isChapterCompleted && (
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<CheckCircle />}
-                    onClick={markChapterCompleted}
-                  >
-                    Mark as Completed
-                  </Button>
-                )}
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={isChapterBookmarked ? <Bookmark /> : <BookmarkBorder />}
-                  onClick={toggleChapterBookmark}
-                >
-                  {isChapterBookmarked ? 'Bookmarked' : 'Bookmark'}
-                </Button>
-              </>
-            )}
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={isChapterBookmarked ? <Bookmark /> : <BookmarkBorder />}
+              onClick={toggleChapterBookmark}
+            >
+              {isChapterBookmarked ? 'Bookmarked' : 'Bookmark'}
+            </Button>
           </Box>
         </Box>
 
@@ -672,44 +442,12 @@ const ChapterView = () => {
         <Paper elevation={0} sx={{ borderRadius: 2, overflow: 'hidden', mb: 4 }}>
           {/* Chapter title */}
           <Box sx={{ p: 4, pb: 2 }}>
-            {isEditing ? (
-              <>
-                <TextField
-                  fullWidth
-                  label="Chapter Title"
-                  variant="outlined"
-                  value={editedChapterTitle}
-                  onChange={(e) => setEditedChapterTitle(e.target.value)}
-                  sx={{ mb: 2 }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <TitleIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  label="Chapter Description"
-                  variant="outlined"
-                  value={editedChapterDescription}
-                  onChange={(e) => setEditedChapterDescription(e.target.value)}
-                  multiline
-                  rows={2}
-                  sx={{ mb: 2 }}
-                />
-              </>
-            ) : (
-              <>
-                <Typography variant="h4" gutterBottom>
-                  {chapterContent?.title || chapter.title || ""}
-                </Typography>
-                <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                  {chapterContent?.description || ""}
-                </Typography>
-              </>
-            )}
+            <Typography variant="h4" gutterBottom>
+              {chapterContent?.title || chapter.title || ""}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              {chapterContent?.description || ""}
+            </Typography>
             
             {chapterContent?.estimatedTime && (
               <Typography variant="body2" color="text.secondary">
@@ -719,107 +457,64 @@ const ChapterView = () => {
           </Box>
           
           {/* Display each section content */}
-          {chapterContent?.sections?.map((section) => (
-            <Box key={section.id} sx={{ p: 4 }}>
-              {isEditing ? (
-                <TextField
-                  fullWidth
-                  label="Section Title"
-                  variant="outlined"
-                  defaultValue={section.title || ""}
-                  onChange={(e) => handleSectionTitleChange(section.id, e.target.value)}
-                  inputRef={el => sectionTitleRefs.current[section.id] = el}
-                  sx={{ mb: 2 }}
-                />
-              ) : (
-                <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
-                  {section.title || "Untitled Section"}
+          {
+  chapterContent !== null && chapterContent.isNewEditorUsed === true ? (
+    
+    <div
+       className="prose prose-purple max-w-none bg-white p-4 rounded-lg shadow-lg border border-purple-200 min-h-full preview-content"
+                               
+     dangerouslySetInnerHTML={{
+    __html: DOMPurify.sanitize(chapterContent.editorContent || "", {
+      FORBID_ATTR: ['style'], // strips all inline styles
+    }),
+  }}
+    />
+  ) : (
+    <>
+      {chapterContent?.sections?.map((section) => (
+        <Box key={section.id} sx={{ p: 4 }}>
+          <Typography className='className="prose prose-purple max-w-none bg-white p-4 rounded-lg shadow-lg border border-purple-200 min-h-full preview-content"
+       ' variant="h5" gutterBottom sx={{ mt: 2 }}>
+            {section.title || "Untitled Section"}
+          </Typography>
+          <div
+            className="prose prose-purple max-w-none bg-white p-4 rounded-lg shadow-lg border border-purple-200 min-h-full preview-content"
+       dangerouslySetInnerHTML={{ __html: section.content || "" }}
+          />
+        </Box>
+      ))}
+      
+      {/* Code examples section */}
+      {chapterContent?.codeExamples?.length > 0 && (
+        <Box sx={{ p: 4 }}>
+          <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
+            Code Examples
+          </Typography>
+          {chapterContent.codeExamples.map((example) => (
+            <Box key={example.id} sx={{ mb: 4 }}>
+              <Typography variant="h6" gutterBottom>
+                {example.title || "Untitled Example"}
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                {example.description || ""}
+              </Typography>
+              <pre className="bg-gray-100 p-4 rounded overflow-auto">
+                <code className={example.language || ""}>
+                  {example.code || ""}
+                </code>
+              </pre>
+              {example.explanation && (
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                  {example.explanation}
                 </Typography>
               )}
-              
-              <div
-                contentEditable={isEditing}
-                className={`prose prose-sm max-w-none bg-white p-4 border ${isEditing ? 'border-blue-500' : 'border-gray-200'} rounded text-[1.2rem]`}
-                dangerouslySetInnerHTML={{ __html: section.content || "" }}
-                ref={el => sectionRefs.current[section.id] = el}
-                suppressContentEditableWarning={true}
-                onBlur={() => isEditing && handleSectionContentChange(section.id)}
-              />
             </Box>
           ))}
-          
-          {/* Code examples section */}
-          {chapterContent?.codeExamples?.length > 0 && (
-            <Box sx={{ p: 4 }}>
-              <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
-                Code Examples
-              </Typography>
-              {chapterContent.codeExamples.map((example) => (
-                <Box key={example.id} sx={{ mb: 4 }}>
-                  {isEditing ? (
-                    <>
-                      <TextField
-                        fullWidth
-                        label="Example Title"
-                        variant="outlined"
-                        defaultValue={example.title || ""}
-                        onChange={(e) => handleCodeExampleChange(example.id, 'title', e.target.value)}
-                        sx={{ mb: 2 }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Example Description"
-                        variant="outlined"
-                        defaultValue={example.description || ""}
-                        onChange={(e) => handleCodeExampleChange(example.id, 'description', e.target.value)}
-                        multiline
-                        rows={2}
-                        sx={{ mb: 2 }}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <Typography variant="h6" gutterBottom>
-                        {example.title || "Untitled Example"}
-                      </Typography>
-                      <Typography variant="body2" gutterBottom>
-                        {example.description || ""}
-                      </Typography>
-                    </>
-                  )}
-                  
-                  <pre className={`bg-gray-100 p-4 rounded overflow-auto ${isEditing ? 'border-2 border-blue-500' : ''}`}>
-                    <code
-                      className={example.language || ""}
-                      contentEditable={isEditing}
-                      suppressContentEditableWarning={true}
-                      ref={el => codeExampleRefs.current[`${example.id}-code`] = el}
-                    >{example.code || ""}</code>
-                  </pre>
-                  
-                  {example.explanation && (
-                    isEditing ? (
-                      <TextField
-                        fullWidth
-                        label="Example Explanation"
-                        variant="outlined"
-                        defaultValue={example.explanation}
-                        onChange={(e) => handleCodeExampleChange(example.id, 'explanation', e.target.value)}
-                        multiline
-                        rows={3}
-                        sx={{ mt: 2 }}
-                      />
-                    ) : (
-                      <Typography variant="body2" sx={{ mt: 2 }}>
-                        {example.explanation}
-                      </Typography>
-                    )
-                  )}
-                </Box>
-              ))}
-            </Box>
-          )}
-          
+        </Box>
+      )}
+    </>
+  )
+}
           {/* If no content is available, use the ChapterContent component as fallback */}
           {(!chapterContent || (!chapterContent.sections?.length && !chapterContent.codeExamples?.length)) && (
             <ChapterContent 
@@ -830,79 +525,41 @@ const ChapterView = () => {
             />
           )}
         </Paper>
-        
-        {/* Floating Save Button when editing */}
-        {isEditing && (
-          <Box
-          sx={{
-            position: 'fixed',
-            bottom: 30,
-            right: 30,
-            zIndex: 1000,
-            display: 'flex',
-            gap: 2
-          }}
-        >
-          <Button
-            variant="contained"
-            color="error"
-            startIcon={<Cancel />}
-            onClick={handleCancelEditing}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Save />}
-            onClick={handleSaveChanges}
-            disabled={saveLoading}
-          >
-            {saveLoading ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </Box>)}
-
 
         {/* Navigation buttons */}
-<Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-  <Button 
-    variant="outlined"
-    startIcon={<NavigateBefore />}
-    // disabled={isFirstChapter}
-    // component={Link}
-    // to={prevChapter ? `/modules/${moduleId}/chapters/${prevChapter.id}` : '#'}
-    onClick={navigateToPrevChapter}
-  >
-    Previous Chapter
-  </Button>
-  <Button 
-    variant="contained"
-    endIcon={<NavigateNext />}
-    // disabled={isLastChapter}
-    // component={Link}
-    // to={nextChapter ? `/modules/${moduleId}/chapters/${nextChapter.id}` : '#'}
-    onClick={navigateToNextChapter}
-  >
-    Next Chapter
-  </Button>
-</Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
+          <Button 
+            variant="outlined"
+            startIcon={<NavigateBefore />}
+            onClick={navigateToPrevChapter}
+          >
+            Previous Chapter
+          </Button>
+          <Button 
+            variant="contained"
+            endIcon={<NavigateNext />}
+            onClick={navigateToNextChapter}
+          >
+            Next Chapter
+          </Button>
+        </Box>
 
-{/* Snackbar for notifications */}
-<Snackbar
-  open={snackbarOpen}
-  autoHideDuration={6000}
-  onClose={() => setSnackbarOpen(false)}
->
-  <Alert 
-    onClose={() => setSnackbarOpen(false)} 
-    severity={snackbarSeverity}
-  >
-    {snackbarMessage}
-  </Alert>
-</Snackbar>
-</Box>
-</>
-);
+        {/* Snackbar for notifications */}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setSnackbarOpen(false)}
+        >
+          <Alert 
+            onClose={() => setSnackbarOpen(false)} 
+            severity={snackbarSeverity}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+      </Box>
+    </>
+  );
 };
 
 export default ChapterView;

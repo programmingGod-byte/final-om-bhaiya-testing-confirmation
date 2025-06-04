@@ -17,6 +17,7 @@ const Home = lazy(() => import('./pages/Home'));
 const Modules = lazy(() => import('./pages/Modules'));
 const ModuleDetail = lazy(() => import('./pages/ModuleDetail'));
 const ChapterView = lazy(() => import('./pages/ChapterView'));
+const OLChapterView = lazy(() => import('./pages/OldChapterView'));
 const CodeEditor = lazy(() => import('./pages/CodeEditor'));
 const Forum = lazy(() => import('./pages/Forum'));
 const Login = lazy(() => import('./pages/Login'));
@@ -34,6 +35,7 @@ const WorkSpaceCodeEditor = lazy(() => import('./pages/WorkSpaceCodeEditor'));
 const WorkSpace = lazy(() => import('./pages/workSpace'));
 const CKEditorWithJson = lazy(() => import('./pages/Ckeditor'));
 const ModuleChapterEditor = lazy(() => import('./pages/Ckeditor2'));
+const OldModuleChapterEditor = lazy(() => import('./pages/oldCkEditor2'));
 const BlogWriter = lazy(() => import('./pages/BlogWriter'));
 const UserProfile = lazy(() => import('./pages/ProfilePage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
@@ -43,6 +45,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const VerifyToken = lazy(() => import('./pages/VerifyToken'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const CustomEditor = lazy(() => import('./pages/CustomEditor'));
 
 // Theme setup
 const theme = createTheme({
@@ -121,12 +124,14 @@ function App() {
     { path: "/", element: <Home /> },
     { path: "/ckeditor", element: <CKEditorWithJson /> },
     { path: "/ckeditor2", element: <ModuleChapterEditor /> },
+    { path: "/oldckeditor2", element: <OldModuleChapterEditor /> },
     { path: "/modules", element: <Modules /> },
     { path: "/workspace", element: <WorkSpace /> },
     { path: "/workspaceEditor/:projectId", element: <WorkSpaceCodeEditor /> },
     { path: "/modules/:id", element: <ModuleDetail /> },
     { path: "/buy-module/:id", element: <BuyModule /> },
     { path: "/modules/:moduleId/chapters/:chapterId", element: <ChapterView /> },
+    { path: "/oldmodules/:moduleId/chapters/:chapterId", element: <OLChapterView /> },
     { path: "/editor", element: <CodeEditor /> },
     { path: "/forgot-password", element: <ForgotPassword /> },
     { path: "/verify/:token", element: <VerifyToken /> },
@@ -146,6 +151,7 @@ function App() {
     { path: "/profile", element: <UserProfile /> },
     { path: "/pricing", element: <PricingPage /> },
     { path: "/about", element: <About /> },
+    { path: "/customEditor", element: <CustomEditor /> },
     { path: "/privacy", element: <Privacy /> },
     { path: "/terms", element: <Terms /> },
     { path: "*", element: <Home /> },

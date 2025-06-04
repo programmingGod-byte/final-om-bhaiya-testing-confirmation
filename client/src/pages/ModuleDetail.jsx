@@ -830,8 +830,23 @@ const handleTabChange = (event, newValue) => {
                   >
                     {'Start'}
                     </Button>
+
+                    
                       }
                     
+                    {
+                      context?.user?.email=="verigeektech@gmail.com"?
+                    <Button 
+                    component={Link} 
+                    to={`/oldmodules/${id}/chapters/${chapter.chapterId}`}
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    sx={{ ml: 2, alignSelf: 'center', flexShrink: 0 }}
+                  >
+                    {'old view '}
+                    </Button>:null
+                    }
                   </Box>
                 </Box>
               ))}

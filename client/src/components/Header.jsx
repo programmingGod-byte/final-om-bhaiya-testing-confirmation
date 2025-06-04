@@ -105,7 +105,9 @@ const Header = () => {
         setnavLink([...LINKS, { text: 'Add module', to: '/ckeditor', icon: <Work /> },
           { text: 'Add chapter', to: '/ckeditor2', icon: <Work /> },
           { text: 'Upload Research Paper', to: '/allResearchTopics', icon: <Work /> },
-          { text: 'Write Blog', to: '/advanceBlogWriter', icon: <Work /> }
+          { text: 'Write Blog', to: '/advanceBlogWriter', icon: <Work /> },
+          { text: 'old upload chapter', to: '/oldckeditor2', icon: <Work /> },
+          
         ])
     }
     
