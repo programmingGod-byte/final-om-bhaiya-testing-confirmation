@@ -69,10 +69,12 @@ app.get('/sitemap.xml', async (req, res) => {
     
     // 2. Static routes with lastmod
     const staticLinks = [
-      { url: '/', changefreq: 'weekly', priority: 1.0, lastmod: new Date().toISOString() },
-      { url: '/modules', changefreq: 'weekly', priority: 0.8, lastmod: new Date().toISOString() },
-      { url: '/blog', changefreq: 'weekly', priority: 0.7, lastmod: new Date().toISOString() },
-      { url: '/contact', changefreq: 'monthly', priority: 0.5, lastmod: new Date().toISOString() },
+      { url: '/', changefreq: 'daily', priority: 1.0, lastmod: new Date().toISOString() },
+      { url: '/modules', changefreq: 'daily', priority: 0.8, lastmod: new Date().toISOString() },
+      { url: '/blog', changefreq: 'daily', priority: 0.7, lastmod: new Date().toISOString() },
+      { url: '/contact', changefreq: 'daily', priority: 0.5, lastmod: new Date().toISOString() },
+       { url: '/careers', changefreq: 'daily', priority: 0.5, lastmod: new Date().toISOString() },
+       { url: '/resources', changefreq: 'daily', priority: 0.5, lastmod: new Date().toISOString() },
     ];
     
     // 3. Dynamic course/module links with proper validation and lastmod
@@ -91,8 +93,8 @@ app.get('/sitemap.xml', async (req, res) => {
         }
         return {
           url: `/modules/${courseId}`,
-          changefreq: 'weekly',
-          priority: 0.9,
+          changefreq: 'daily',
+          priority: 1,
           lastmod: new Date().toISOString(), // Use current date for simplicity
         };
       })

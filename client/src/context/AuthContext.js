@@ -26,10 +26,24 @@ export const AuthProvider = ({ children }) => {
   const [currentModule,setCurrentModule] = useState([])
   const [currentChapterIndex,setCurrentChapterIndex] = useState(0)
   const navigate = useNavigate()
+
+  function locationCheck(location){
+    if(location.startsWith("/resources") || location.startsWith("/blog") || location.startsWith("/careers") || location.startsWith("/pricing")){
+      return true;
+    }
+    if(location.length==1 && location=="/"){
+      return true;
+    }
+    if(location.startsWith("/modules") && !location.includes("/chapters")){
+      return true;
+    }
+    return false;
+  }
+
   useEffect(() => {
     // Check if user is stored in localStorage
     
-     const isVerifyRoute = location.pathname.startsWith('/verify') || location.pathname.startsWith('/forgot-password') || location.pathname.startsWith('/customEditor');
+     const isVerifyRoute = location.pathname.startsWith('/verify') || location.pathname.startsWith('/forgot-password') || location.pathname.startsWith('/customEditor') || locationCheck(location.pathname)
 
     // Skip auth check for verify or public routes
     if (isVerifyRoute) return;
